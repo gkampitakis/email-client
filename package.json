@@ -1,6 +1,6 @@
 {
   "name": "@gkampitakis/email-provider",
-  "version": "1.0.0",
+  "version": "1.1.0",
   "description": "A module implementing an email provider",
   "main": "lib/index.js",
   "types": "lib/index.d.ts",
@@ -33,5 +33,15 @@
     "nodemailer-express-handlebars": "^3.1.0",
     "nodemailer-sendgrid": "^1.0.3",
     "validator": "^12.2.0"
+  },
+  "publishConfig": {
+    "registry": "https://npm.pkg.github.com"
+  },
+  "files": [
+    "lib/**/*"
+  ],
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/gkampitakis/emailProvider.git"
   }
 }
