@@ -1,47 +1,51 @@
 {
-  "name": "@gkampitakis/email-provider",
-  "version": "1.1.0",
-  "description": "A module implementing an email provider",
-  "main": "lib/index.js",
-  "types": "lib/index.d.ts",
-  "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1",
-    "build": "tsc",
-    "format": "prettier --write \"src/**/*.ts\" \"src/**/*.js\"",
-    "lint": "tslint -p tsconfig.json",
-    "prepare": "npm run build"
-  },
-  "keywords": [
-    "email",
-    "email-provider"
-  ],
-  "author": "Georgios Kampitakis",
-  "license": "ISC",
-  "devDependencies": {
-    "@types/nodemailer": "^6.4.0",
-    "@types/validator": "^12.0.1",
-    "@typescript-eslint/eslint-plugin": "^2.17.0",
-    "@typescript-eslint/parser": "^2.17.0",
-    "eslint": "^6.8.0",
-    "prettier": "^1.19.1",
-    "tslint": "^6.0.0",
-    "tslint-config-prettier": "^1.18.0",
-    "typescript": "^3.7.5"
-  },
-  "dependencies": {
-    "nodemailer": "^6.4.2",
-    "nodemailer-express-handlebars": "^3.1.0",
-    "nodemailer-sendgrid": "^1.0.3",
-    "validator": "^12.2.0"
-  },
-  "publishConfig": {
-    "registry": "https://npm.pkg.github.com"
-  },
-  "files": [
-    "lib/**/*"
-  ],
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/gkampitakis/emailProvider.git"
-  }
+	"name": "@gkampitakis/email-client",
+	"version": "1.1.0",
+	"description": "A module implementing an email client",
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
+	"scripts": {
+		"test": "echo \"Error: no test specified\" && exit 1",
+		"build": "npm run clean && tsc",
+		"format": "prettier --write \"src/**/*.ts\"",
+		"eslint": "eslint src/**/*.ts",
+		"clean": "rimraf ./lib ./coverage",
+		"prepublishOnly": "npm run build"
+	},
+	"keywords": [
+		"email",
+		"email-client"
+	],
+	"author": "Georgios Kampitakis",
+	"license": "ISC",
+	"devDependencies": {
+		"@types/nodemailer": "^6.4.0",
+		"@types/validator": "^12.0.1",
+		"@typescript-eslint/eslint-plugin": "^2.26.0",
+		"@typescript-eslint/parser": "^2.26.0",
+		"eslint": "^6.8.0",
+		"prettier": "^2.0.2",
+		"rimraf": "^3.0.2",
+		"eslint-config-airbnb-base": "^14.0.0",
+		"eslint-plugin-import": "^2.20.1",
+		"typescript": "^3.8.3"
+	},
+	"dependencies": {
+		"nodemailer": "^6.4.6",
+		"nodemailer-express-handlebars": "^4.0.0",
+		"nodemailer-sendgrid": "^1.0.3",
+		"validator": "^13.0.0",
+		"pino": "^5.17.0",
+		"pino-pretty": "^3.6.1"
+	},
+	"publishConfig": {
+		"registry": "https://npm.pkg.github.com"
+	},
+	"files": [
+		"lib/**/*"
+	],
+	"repository": {
+		"type": "git",
+		"url": "https://github.com/gkampitakis/emailClient.git"
+	}
 }
