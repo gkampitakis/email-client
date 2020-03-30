@@ -1,1 +1,1 @@
-export { EmailProvider, EmailProviderConfig } from './src/emailProvider';
+export { EmailClient, EmailClientConfig } from './src/emailClient';

@@ -1,6 +1,6 @@
-# EmailProvider
+# EmailClient
 
-# Email-Provider
+# Email-Client
 
 It's a module created for personal use on node servers for typescript and javascript for sending 
 emails.
@@ -9,12 +9,12 @@ emails.
 
 Install the module:<br/>
 <br/>
-```npm install @gkampitakis/email-provider --save```
+```npm install @gkampitakis/email-client --save```
 
-First thing you must initialize the provider before using it.
+First thing you must initialize the client before using it.
 
 ```
-import { EmailProvider } from '@gkampitakis/email-provider';
+import { EmailClient } from '@gkampitakis/email-client';
 
  EmailProvider.setup({
       sendGridApiKey: <sendgrid api key>,
@@ -26,7 +26,7 @@ import { EmailProvider } from '@gkampitakis/email-provider';
 **Example**:
 
 ```
- await this.emailProvider.send(email, 'Password Reset', {
+ await this.emailClient.send(email, 'Password Reset', {
           token: result.token
         },
           'changePassword'
