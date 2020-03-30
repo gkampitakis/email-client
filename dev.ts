@@ -1,4 +1,4 @@
-import EmailClient from './src/EmailClient';
+import EmailClient from './src';
 
 const client = new EmailClient({
     transporter: 'mailgun'

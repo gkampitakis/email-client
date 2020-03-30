@@ -72,10 +72,10 @@
 // }
 
 
-import { Transporters } from './transporters';
+import { Transporters } from '../transporters';
 
 interface EmailClientConfiguration {
-    transporter: 'mailgun' | 'sendgrid'
+    transporter: 'mailgun' | 'sendgrid';
 }
 
 export default class EmailClient {
@@ -84,6 +84,6 @@ export default class EmailClient {
         return new Transporters[configuration.transporter]({});
     }
 
-    public send(): Promise<any> { return Promise.resolve() }
+    public send(): Promise<any> { return Promise.resolve(); }
 
 }

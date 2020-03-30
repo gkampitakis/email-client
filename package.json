@@ -5,7 +5,7 @@
 	"main": "lib/src/index.js",
 	"types": "lib/src/index.d.ts",
 	"scripts": {
-		"test": "echo \"Error: no test specified\" && exit 1",
+		"test": "npm run clean && npm run eslint && jest",
 		"build": "npm run clean && tsc",
 		"format": "prettier --write \"src/**/*.ts\"",
 		"eslint": "eslint src/**/*.ts",
@@ -20,6 +20,9 @@
 	"author": "Georgios Kampitakis",
 	"license": "ISC",
 	"devDependencies": {
+		"@types/jest": "^25.1.3",
+		"jest": "^25.1.0",
+		"ts-jest": "^25.2.1",
 		"@types/nodemailer": "^6.4.0",
 		"@types/validator": "^12.0.1",
 		"@typescript-eslint/eslint-plugin": "^2.26.0",
@@ -46,6 +49,36 @@
 	"files": [
 		"lib/**/*"
 	],
+	"jest": {
+		"globals": {
+			"ts-jest": {
+				"diagnostics": false
+			}
+		},
+		"verbose": true,
+		"collectCoverage": true,
+		"moduleFileExtensions": [
+			"ts",
+			"js"
+		],
+		"transform": {
+			"\\.ts$": "ts-jest"
+		},
+		"testRegex": "(/__tests__/.*|(\\.|/)(test|spec))\\.ts$",
+		"collectCoverageFrom": [
+			"src/**/*.ts",
+			"!src/**/index.ts",
+			"!src/**/*.d.ts"
+		],
+		"coverageThreshold": {
+			"global": {
+				"branches": 90,
+				"functions": 90,
+				"lines": 90,
+				"statements": 90
+			}
+		}
+	},
 	"repository": {
 		"type": "git",
 		"url": "https://github.com/gkampitakis/emailClient.git"
