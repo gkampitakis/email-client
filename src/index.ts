@@ -1,0 +1,1 @@
+export { EmailClient, EmailClientConfig } from './emailClient';
