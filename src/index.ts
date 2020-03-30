@@ -1,1 +1,2 @@
-export { EmailClient, EmailClientConfig } from './emailClient';
+import EmailClient from './EmailClient';
+export default EmailClient;
