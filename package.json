@@ -36,12 +36,7 @@
 		"typescript": "^3.8.3"
 	},
 	"dependencies": {
-		"nodemailer": "^6.4.6",
-		"nodemailer-express-handlebars": "^4.0.0",
-		"nodemailer-sendgrid": "^1.0.3",
-		"validator": "^13.0.0",
-		"pino": "^6.0.0",
-		"pino-pretty": "^3.6.1"
+		"@sendgrid/mail": "^6.5.5"
 	},
 	"publishConfig": {
 		"registry": "https://npm.pkg.github.com"
