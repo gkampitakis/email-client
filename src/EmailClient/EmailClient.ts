@@ -6,7 +6,7 @@
 
 // export interface EmailClientConfig {
 // 	sendGridApiKey: string;
-// 	sender: string;clear 
+// 	sender: string;clear
 // 	supportedEmailTypes: string[];
 // 	templatesFolder: string;
 // }
@@ -71,19 +71,38 @@
 // 	}
 // }
 
-
 import { Transporters } from '../transporters';
+import MailGun from "../transporters/MailGun/MailGun";
+import SendGrid from "../transporters/SendGrid/SendGrid";
 
 interface EmailClientConfiguration {
-    transporter: 'mailgun' | 'sendgrid';
+    transporter: 'mailgun' | 'sendgrid'; //TODO: test if wrong transporter is given
+    api_key: string;
+    templateDir: string;
+}
+
+interface ExtendableObject {
+    [key: string]: any;
+}
+
+interface message {
+    from: string;
+    to: string;
+    template?: string;
 }
 
 export default class EmailClient {
 
+    private transporter: MailGun | SendGrid;
+
     constructor(configuration: EmailClientConfiguration) {
-        return new Transporters[configuration.transporter]({});
+        const { transporter, api_key } = configuration;
+        this.transporter = new Transporters[transporter]({ api_key });
     }
 
-    public send(): Promise<any> { return Promise.resolve(); }
+    public send(message: message & ExtendableObject): Promise<any> {
+        return this.transporter.send(message);
+    }
 
 }
+
