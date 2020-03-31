@@ -85,7 +85,7 @@ interface ExtendableObject {
     [key: string]: any;
 }
 
-interface message {
+interface Message {
     from: string;
     to: string;
     template?: string;
@@ -100,7 +100,7 @@ export default class EmailClient {
         this.transporter = new Transporters[transporter]({ api_key });
     }
 
-    public send(message: message & ExtendableObject): Promise<any> {
+    public send(message: Message & ExtendableObject): Promise<any> {
         return this.transporter.send(message);
     }
 

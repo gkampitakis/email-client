@@ -1,9 +1,9 @@
 import { Transporter } from '../Transporter';
-import sendGrid from '@sendgrid/mail';
+import { send, setApiKey } from '@sendgrid/mail';
 
 export default class SendGrid extends Transporter {
     constructor(configuration: any) {
-        sendGrid.setApiKey(configuration.api_key);
+        setApiKey(configuration.api_key);
         super(configuration);
     }
 
@@ -14,12 +14,11 @@ export default class SendGrid extends Transporter {
 
         let { html, ...data } = message;
         data.content = [{
-            type: 'test/html',
+            type: 'text/html',
             value: html
         }];
 
-        return sendGrid
-            .send(message);
+        return send(data);
 
     }
 

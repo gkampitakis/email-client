@@ -23,12 +23,13 @@ module.exports = {
 		'@typescript-eslint/interface-name-prefix': ['error', 'never'],
 		'@typescript-eslint/explicit-function-return-type': ['off'],
 		'@typescript-eslint/no-parameter-properties': ['off'],
+		'@typescript-eslint/camelcase': ['warn'],
 		'@typescript-eslint/member-ordering': ['error', { default: ['field', 'constructor', 'method'] }],
 		'comma-dangle': ['error', 'never'],
 		'no-unused-expressions': ['off'],
 		'sort-keys': ['off'],
 		'max-len': [
-			'error',
+			'warn',
 			{
 				code: 150,
 				tabWidth: 4
