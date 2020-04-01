@@ -1,6 +1,8 @@
-const SendEmailSpy = jest.fn();
+const SendEmailSpy = jest.fn(),
+    SetApiKeySpy = jest.fn();
 
 function setApiKey(key: string): void {
+    SetApiKeySpy(key);
     return;
 }
 
@@ -11,6 +13,7 @@ function send(message: any): Promise<any> {
 
 export {
     SendEmailSpy,
+    SetApiKeySpy,
     send,
     setApiKey
 };

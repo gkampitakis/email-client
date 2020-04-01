@@ -4,10 +4,11 @@ jest.mock('@sendgrid/mail');
 
 describe('SendGrid', () => {
 
-    const { SendEmailSpy } = jest.requireMock('@sendgrid/mail');
+    const { SendEmailSpy, SetApiKeySpy } = jest.requireMock('@sendgrid/mail');
 
     beforeEach(() => {
         SendEmailSpy.mockClear();
+        SetApiKeySpy.mockClear();
     });
 
     it('should call the send message', () => {
@@ -28,6 +29,7 @@ describe('SendGrid', () => {
                 value: '<div>Test</div>'
             }]
         });
+        expect(SetApiKeySpy).toHaveBeenNthCalledWith(1, 'mockApiKey');
 
     });
 });
