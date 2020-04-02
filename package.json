@@ -2,8 +2,8 @@
 	"name": "@gkampitakis/email-client",
 	"version": "1.1.0",
 	"description": "A module implementing an email client",
-	"main": "lib/src/index.js",
-	"types": "lib/src/index.d.ts",
+	"main": "lib/index.js",
+	"types": "lib/index.d.ts",
 	"scripts": {
 		"test": "npm run clean && npm run eslint && jest",
 		"build": "npm run clean && tsc",
@@ -11,7 +11,7 @@
 		"eslint": "eslint src/**/*.ts",
 		"clean": "rimraf ./lib ./coverage",
 		"prepublishOnly": "npm run build",
-		"dev": "ts-node-dev --respawn --transpileOnly ./dev.ts"
+		"dev": "ts-node-dev --respawn --transpileOnly ./playground/playground.ts"
 	},
 	"keywords": [
 		"email",
@@ -36,7 +36,9 @@
 		"typescript": "^3.8.3"
 	},
 	"dependencies": {
-		"@sendgrid/mail": "^6.5.5"
+		"@sendgrid/mail": "^6.5.5",
+		"handlebars": "^4.7.4",
+		"mjml": "^4.6.2"
 	},
 	"publishConfig": {
 		"registry": "https://npm.pkg.github.com"

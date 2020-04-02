@@ -1,20 +1,13 @@
 {
-    "compilerOptions": {
-        "target": "es5",
-        "module": "commonjs",
-        "declaration": true,
-        "outDir": "./lib",
-        "strict": true,
-        "noImplicitAny": false,
-        "esModuleInterop": true
-    },
-    "include": [
-        "src",
-        "src/index.ts"
-    ],
-    "exclude": [
-        "node_modules",
-        "**/__mocks__/*",
-        "**/*.spec.ts"
-    ]
+	"compilerOptions": {
+		"target": "es5",
+		"module": "commonjs",
+		"declaration": true,
+		"outDir": "./lib",
+		"strict": true,
+		"noImplicitAny": false,
+		"esModuleInterop": true
+	},
+	"include": ["src", "src/index.ts"],
+	"exclude": ["**/playground/*", "node_modules", "**/__mocks__/*", "**/*.spec.ts"]
 }

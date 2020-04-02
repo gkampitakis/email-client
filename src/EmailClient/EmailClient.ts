@@ -1,108 +1,111 @@
-// import { Transporter, createTransport } from 'nodemailer';
-// import sendGrid from 'nodemailer-sendgrid';
-// import hbs from 'nodemailer-express-handlebars';
-// import validator from 'validator';
-// import path from 'path';
-
-// export interface EmailClientConfig {
-// 	sendGridApiKey: string;
-// 	sender: string;clear
-// 	supportedEmailTypes: string[];
-// 	templatesFolder: string;
-// }
-
-// export class EmailClient {
-// 	private static config: EmailClientConfig;
-
-// 	constructor() {
-// 		this.send = this.send.bind(this);
-// 	}
-
-// 	public async send(receiver: string, subject: string, payload: any, type: string): Promise<any> {
-// 		this.configError();
-// 		if (!validator.isEmail(receiver)) throw Error('Please support valid email');
-
-// 		const transporter: Transporter = this.createTransporter(type);
-
-// 		const mailPayload = {
-// 			from: EmailClient.config.sender,
-// 			to: receiver,
-// 			subject,
-// 			text: payload?.text,
-// 			template: type,
-// 			context: payload
-// 		};
-
-// 		return transporter.sendMail(mailPayload);
-// 	}
-
-// 	private createTransporter(type: string): Transporter {
-// 		const { templatesFolder, sendGridApiKey, supportedEmailTypes } = EmailClient.config,
-// 			transporter: Transporter = createTransport(
-// 				sendGrid({
-// 					apiKey: sendGridApiKey
-// 				})
-// 			);
-
-// 		if (!supportedEmailTypes.includes(type)) throw Error('Unsupported email type');
-
-// 		transporter.use(
-// 			'compile',
-// 			hbs({
-// 				viewEngine: {
-// 					extName: '.handlebars', // NOTE: stupid placeholders for handlebars package
-// 					partialsDir: path.join(process.cwd(), `./${templatesFolder}/`),
-// 					layoutsDir: path.join(process.cwd(), `./${templatesFolder}/`),
-// 					defaultLayout: type + '.handlebars'
-// 				},
-// 				viewPath: path.join(process.cwd(), `./${templatesFolder}/`)
-// 			})
-// 		);
-
-// 		return transporter;
-// 	}
-
-// 	static setup(config: EmailClientConfig) {
-// 		EmailClient.config = config;
-// 	}
-
-// 	private configError() {
-// 		if (!EmailClient.config) throw Error('Email provider not initialized');
-// 	}
-// }
-
 import { Transporters } from '../transporters';
-import MailGun from "../transporters/MailGun/MailGun";
-import SendGrid from "../transporters/SendGrid/SendGrid";
+import MailGun from '../transporters/MailGun/MailGun';
+import SendGrid from '../transporters/SendGrid/SendGrid';
+import fs from 'fs';
+import handlebars from 'handlebars';
+import mjml2html from 'mjml';
 
 interface EmailClientConfiguration {
-    transporter: 'mailgun' | 'sendgrid'; //TODO: test if wrong transporter is given
-    api_key: string;
-    templateDir: string;
+	transporter: Transporter;
+	api_key: string;
+	templateDir: string;
 }
 
+type Transporter = 'mailgun' | 'sendgrid';
+
 interface ExtendableObject {
-    [key: string]: any;
+	[key: string]: any;
 }
 
 interface Message {
-    from: string;
-    to: string;
-    template?: string;
+	from: string;
+	to: string;
+	template?: string;
+	data?: object;
 }
 
 export default class EmailClient {
+	private static _transporter: MailGun | SendGrid;
+	private static templates: Map<string, HandlebarsTemplateDelegate<any>> = new Map();
 
-    private transporter: MailGun | SendGrid;
+	constructor(configuration: EmailClientConfiguration) {
+		const { transporter, templateDir } = configuration;
+		EmailClient._transporter = new Transporters[transporter](configuration);
+		this.setTemplates(templateDir);
+	}
 
-    constructor(configuration: EmailClientConfiguration) {
-        const { transporter, api_key } = configuration;
-        this.transporter = new Transporters[transporter]({ api_key });
-    }
+	public send(message: Message & ExtendableObject): Promise<any> {
+		if (message.template) {
+			message.html = this.getTemplate(message.template); //NOTE: rename not appropriate naming //BUG: not passing down the data to be compiled
+			delete message.template;
+		}
 
-    public send(message: Message & ExtendableObject): Promise<any> {
-        return this.transporter.send(message);
-    }
+		return EmailClient._transporter.send(message);
+	}
 
+	public transporter(transporter: Transporter, configuration: any) {
+		EmailClient._transporter = new Transporters[transporter](configuration);
+	}
+
+	public setTemplates(templateDir: string) {
+		if (!templateDir) return;
+		this.compileTemplates(templateDir);
+	}
+
+	private getTemplate(templateName: string) {
+		const template = EmailClient.templates.get(templateName);
+		if (!template)
+			throw new Error(
+				`${templateName} not found on directory.Verify the path and the supported types[*.hbs, *.handlebars, *.mjml]`
+			);
+
+		return mjml2html(template({})).html; //BUG: this won't work with the hbs file
+	}
+
+	private compileTemplates(templateDir: string) {
+		// TODO add the compiled file to the Map
+
+		const { hbs, mjml } = this.getByFileTypes(templateDir);
+
+		hbs.forEach((fileName: string) => {
+			//NOTE: this probably needs to be implemented with other way
+			//Throw error if the template already exists and clear the template map if this file is reset
+			const file = fs.readFileSync(`${templateDir}/${fileName}`, { encoding: 'utf-8' });
+
+			EmailClient.templates.set(fileName.replace('.hbs', ''), handlebars.compile(file));
+		});
+
+		mjml.forEach((fileName: string) => {
+			const file = fs.readFileSync(`${templateDir}/${fileName}`, { encoding: 'utf-8' });
+
+			EmailClient.templates.set(fileName.replace('.mjml', ''), handlebars.compile(file));
+		});
+	}
+
+	private getByFileTypes(templateDir: string): { hbs: []; mjml: [] } {
+		return fs
+			.readdirSync(templateDir)
+			.filter((file) => this.isSupportedFileType(file))
+			.reduce(
+				(result: any, entry) => {
+					if (entry.includes('.hbs')) {
+						return {
+							hbs: [...result.hbs, entry],
+							mjml: result.mjml
+						};
+					}
+
+					return {
+						hbs: result.hbs,
+						mjml: [...result.mjml, entry]
+					};
+				},
+				{ hbs: [], mjml: [] }
+			);
+	}
+
+	private isSupportedFileType(file: any): boolean {
+		return file.includes('.hbs') || file.includes('.mjml');
+	}
 }
-
+//TODO: investigate the handlebars helpers
