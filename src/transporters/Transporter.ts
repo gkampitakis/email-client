@@ -1,9 +1,9 @@
 export abstract class Transporter {
-    protected configuration: any;
+	protected configuration: any;
 
-    constructor(configuration: any) {
-        this.configuration = configuration;
-    }
+	constructor(configuration: any) {
+		this.configuration = configuration;
+	}
 
-    public abstract send(message: any): Promise<any>;
+	public abstract send(message: any): Promise<any>;
 }

@@ -36,7 +36,7 @@ export default class EmailClient {
 
 	public send(message: Message & ExtendableObject): Promise<any> {
 		if (message.template) {
-			message.html = this.getTemplate(message.template); //NOTE: rename not appropriate naming //BUG: not passing down the data to be compiled
+			message.html = this.getCompiledHtml(message.template, message.data);
 			delete message.template;
 		}
 
@@ -49,63 +49,34 @@ export default class EmailClient {
 
 	public setTemplates(templateDir: string) {
 		if (!templateDir) return;
+
+		EmailClient.templates.clear();
+
 		this.compileTemplates(templateDir);
 	}
 
-	private getTemplate(templateName: string) {
+	private getCompiledHtml(templateName: string, data: any) {
 		const template = EmailClient.templates.get(templateName);
 		if (!template)
 			throw new Error(
 				`${templateName} not found on directory.Verify the path and the supported types[*.hbs, *.handlebars, *.mjml]`
 			);
 
-		return mjml2html(template({})).html; //BUG: this won't work with the hbs file
+		return templateName.includes('.mjml') ? mjml2html(template(data)).html : template(data);
 	}
 
-	private compileTemplates(templateDir: string) {
-		// TODO add the compiled file to the Map
-
-		const { hbs, mjml } = this.getByFileTypes(templateDir);
-
-		hbs.forEach((fileName: string) => {
-			//NOTE: this probably needs to be implemented with other way
-			//Throw error if the template already exists and clear the template map if this file is reset
-			const file = fs.readFileSync(`${templateDir}/${fileName}`, { encoding: 'utf-8' });
-
-			EmailClient.templates.set(fileName.replace('.hbs', ''), handlebars.compile(file));
-		});
-
-		mjml.forEach((fileName: string) => {
-			const file = fs.readFileSync(`${templateDir}/${fileName}`, { encoding: 'utf-8' });
-
-			EmailClient.templates.set(fileName.replace('.mjml', ''), handlebars.compile(file));
-		});
-	}
-
-	private getByFileTypes(templateDir: string): { hbs: []; mjml: [] } {
-		return fs
-			.readdirSync(templateDir)
+	private compileTemplates(templateDir: string): void {
+		fs.readdirSync(templateDir)
 			.filter((file) => this.isSupportedFileType(file))
-			.reduce(
-				(result: any, entry) => {
-					if (entry.includes('.hbs')) {
-						return {
-							hbs: [...result.hbs, entry],
-							mjml: result.mjml
-						};
-					}
+			.forEach((fileName) => {
+				const file = fs.readFileSync(`${templateDir}/${fileName}`, { encoding: 'utf-8' });
 
-					return {
-						hbs: result.hbs,
-						mjml: [...result.mjml, entry]
-					};
-				},
-				{ hbs: [], mjml: [] }
-			);
+				EmailClient.templates.set(fileName, handlebars.compile(file));
+			});
 	}
 
 	private isSupportedFileType(file: any): boolean {
-		return file.includes('.hbs') || file.includes('.mjml');
+		return file.includes('.hbs') || file.includes('.handlebars') || file.includes('.mjml');
 	}
 }
 //TODO: investigate the handlebars helpers
