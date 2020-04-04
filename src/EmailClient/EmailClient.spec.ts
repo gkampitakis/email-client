@@ -214,4 +214,43 @@ describe('EmailClient', () => {
 			expect(FsMock.ReaddirSyncSpy).not.toHaveBeenCalled();
 		});
 	});
+
+	describe('configureHandlebars', () => {
+		it('Should call registerHelper', () => {
+			const client = new EmailClient({
+					api_key: '',
+					transporter: 'sendgrid',
+					templateDir: './mockDir'
+				}),
+				helpers = [
+					{
+						name: 'mock',
+						// eslint-disable-next-line
+						function: () => {}
+					},
+					{
+						name: 'mock',
+						// eslint-disable-next-line
+						function: () => {}
+					}
+				];
+
+			client.configureHandlebars({ helpers });
+
+			expect(HandleBarsMock.RegisterHelperSpy).toHaveBeenCalledTimes(2);
+		});
+
+		it('Should call the configure function', () => {
+			const client = new EmailClient({
+					api_key: '',
+					transporter: 'sendgrid',
+					templateDir: './mockDir'
+				}),
+				configure = jest.fn();
+
+			client.configureHandlebars({ configure });
+
+			expect(configure).toHaveBeenCalledTimes(1);
+		});
+	});
 });

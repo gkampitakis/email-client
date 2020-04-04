@@ -2,7 +2,7 @@ import { Transporters } from '../transporters';
 import MailGun from '../transporters/MailGun/MailGun';
 import SendGrid from '../transporters/SendGrid/SendGrid';
 import fs from 'fs';
-import handlebars from 'handlebars';
+import handlebars, { HelperDelegate } from 'handlebars';
 import mjml2html from 'mjml';
 
 interface EmailClientConfiguration {
@@ -24,9 +24,15 @@ interface Message {
 	data?: object;
 }
 
+interface HandlebarsConfiguration {
+	configure?: (Handlebars) => void;
+	helpers?: { name: string; function: HelperDelegate }[];
+}
+
 export default class EmailClient {
 	private static _transporter: MailGun | SendGrid;
 	private static templates: Map<string, HandlebarsTemplateDelegate<any>> = new Map();
+	private static handlebars = handlebars;
 
 	constructor(configuration: EmailClientConfiguration) {
 		const { transporter, templateDir, ...rest } = configuration;
@@ -57,6 +63,14 @@ export default class EmailClient {
 		this.compileTemplates(templateDir);
 	}
 
+	public configureHandlebars(configuration: HandlebarsConfiguration) {
+		const { configure, helpers = [] } = configuration;
+
+		helpers.forEach((helper) => EmailClient.handlebars.registerHelper(helper.name, helper.function));
+
+		if (configure) configure(EmailClient.handlebars);
+	}
+
 	private getCompiledHtml(templateName: string, data: any) {
 		const template = EmailClient.templates.get(templateName);
 		if (!template)
@@ -73,7 +87,7 @@ export default class EmailClient {
 			.forEach((fileName) => {
 				const file = fs.readFileSync(`${templateDir}/${fileName}`, { encoding: 'utf-8' });
 
-				EmailClient.templates.set(fileName, handlebars.compile(file));
+				EmailClient.templates.set(fileName, EmailClient.handlebars.compile(file));
 			});
 	}
 
@@ -81,4 +95,3 @@ export default class EmailClient {
 		return file.includes('.hbs') || file.includes('.handlebars') || file.includes('.mjml');
 	}
 }
-//TODO: investigate the handlebars helpers
