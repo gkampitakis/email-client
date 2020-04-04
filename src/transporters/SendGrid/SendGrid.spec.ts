@@ -16,13 +16,18 @@ describe('SendGrid', () => {
 		transporter.send({
 			from: 'george',
 			to: 'george',
-			html: '<div>Test</div>'
+			html: '<div>Test</div>',
+			text: 'test'
 		});
 
 		expect(SendEmailSpy).toHaveBeenNthCalledWith(1, {
 			from: 'george',
 			to: 'george',
 			content: [
+				{
+					type: 'text/plain',
+					value: 'test'
+				},
 				{
 					type: 'text/html',
 					value: '<div>Test</div>'

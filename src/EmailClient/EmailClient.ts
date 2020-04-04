@@ -8,7 +8,7 @@ import mjml2html from 'mjml';
 interface EmailClientConfiguration {
 	transporter: Transporter;
 	api_key: string;
-	templateDir: string;
+	templateDir?: string;
 }
 
 type Transporter = 'mailgun' | 'sendgrid';
@@ -29,8 +29,8 @@ export default class EmailClient {
 	private static templates: Map<string, HandlebarsTemplateDelegate<any>> = new Map();
 
 	constructor(configuration: EmailClientConfiguration) {
-		const { transporter, templateDir } = configuration;
-		EmailClient._transporter = new Transporters[transporter](configuration);
+		const { transporter, templateDir, ...rest } = configuration;
+		this.transporter(transporter, rest);
 		this.setTemplates(templateDir);
 	}
 
@@ -44,10 +44,12 @@ export default class EmailClient {
 	}
 
 	public transporter(transporter: Transporter, configuration: any) {
+		if (!Transporters[transporter])
+			throw new Error('Not supported transporter' + transporter + '.\nCurrently you can use [Sendgrid, Mailgun]');
 		EmailClient._transporter = new Transporters[transporter](configuration);
 	}
 
-	public setTemplates(templateDir: string) {
+	public setTemplates(templateDir: string | undefined) {
 		if (!templateDir) return;
 
 		EmailClient.templates.clear();

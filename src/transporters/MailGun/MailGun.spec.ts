@@ -1,5 +1,8 @@
+import MailGun from './MailGun';
+
 describe('MailGun', () => {
-	it('test', () => {
-		expect(true).toBe(true);
+	it('Send', () => {
+		const mailGun = new MailGun({});
+		expect(mailGun).resolves;
 	});
 });
