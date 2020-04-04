@@ -8,17 +8,17 @@ jest.mock('mjml');
 describe('EmailClient', () => {
 	const { sendgrid: SendGridMock, mailgun: MailGunMock } = jest.requireMock('../transporters').Transporters,
 		FsMock = jest.requireMock('fs').Fs,
-		HandleBarsMock = jest.requireMock('handlebars').Handlebars,
+		HbsMock = jest.requireMock('handlebars').Hbs,
 		{ MjmlCompileSpy } = jest.requireMock('mjml');
 
 	beforeEach(() => {
-		MailGunMock.MailGunSendSpy.mockClear();
-		MailGunMock.MailGunConstructorSpy.mockClear();
-		SendGridMock.SendGridSendSpy.mockClear();
-		SendGridMock.SendGridConstructorSpy.mockClear();
+		MailGunMock.SendSpy.mockClear();
+		MailGunMock.ConstructorSpy.mockClear();
+		SendGridMock.SendSpy.mockClear();
+		SendGridMock.ConstructorSpy.mockClear();
 		FsMock.ReaddirSyncSpy.mockClear();
-		HandleBarsMock.HandlebarsCompileSpy.mockClear();
-		HandleBarsMock.HandlebarsTemplateSpy.mockClear();
+		HbsMock.CompileSpy.mockClear();
+		HbsMock.TemplateSpy.mockClear();
 		MjmlCompileSpy.mockClear();
 
 		FsMock.StaticFiles = [];
@@ -31,7 +31,7 @@ describe('EmailClient', () => {
 				transporter: 'sendgrid'
 			});
 
-			expect(SendGridMock.SendGridConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
+			expect(SendGridMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
 		});
 
 		it('Should instantiate mailgun transporter', () => {
@@ -40,7 +40,7 @@ describe('EmailClient', () => {
 				transporter: 'mailgun'
 			});
 
-			expect(MailGunMock.MailGunConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
+			expect(MailGunMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
 		});
 
 		it('Should throw error if not supported transporter', () => {
@@ -67,10 +67,10 @@ describe('EmailClient', () => {
 			});
 
 			expect(FsMock.ReaddirSyncSpy).toHaveBeenNthCalledWith(1, './mockDir');
-			expect(HandleBarsMock.HandlebarsCompileSpy).toHaveBeenCalledWith('./mockDir/test.hbs');
-			expect(HandleBarsMock.HandlebarsCompileSpy).toHaveBeenCalledWith('./mockDir/test2.mjml');
-			expect(HandleBarsMock.HandlebarsCompileSpy).toHaveBeenCalledWith('./mockDir/test3.handlebars');
-			expect(HandleBarsMock.HandlebarsCompileSpy).toHaveBeenCalledTimes(3);
+			expect(HbsMock.CompileSpy).toHaveBeenCalledWith('./mockDir/test.hbs');
+			expect(HbsMock.CompileSpy).toHaveBeenCalledWith('./mockDir/test2.mjml');
+			expect(HbsMock.CompileSpy).toHaveBeenCalledWith('./mockDir/test3.handlebars');
+			expect(HbsMock.CompileSpy).toHaveBeenCalledTimes(3);
 		});
 
 		it('Should not call the compileTemplates if templateDir is not provided', () => {
@@ -85,14 +85,14 @@ describe('EmailClient', () => {
 
 	describe('Send', () => {
 		it('Should not call getCompiledHtml if no template is provided', () => {
-			const emailClient = new EmailClient({ api_key: '', transporter: 'sendgrid' });
+			const client = new EmailClient({ api_key: '', transporter: 'sendgrid' });
 
-			emailClient.send({
+			client.send({
 				from: 'mock@email.com',
 				to: 'mock@email.com'
 			});
 
-			expect(SendGridMock.SendGridSendSpy).toHaveBeenNthCalledWith(1, {
+			expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(1, {
 				from: 'mock@email.com',
 				to: 'mock@email.com'
 			});
@@ -101,49 +101,49 @@ describe('EmailClient', () => {
 		it('Should call getCompiledHtml if template is provided [handlebars, hbs]', () => {
 			FsMock.StaticFiles = ['test.hbs'];
 
-			const emailClient = new EmailClient({ api_key: '', transporter: 'sendgrid', templateDir: './mockDir' });
+			const client = new EmailClient({ api_key: '', transporter: 'sendgrid', templateDir: './mockDir' });
 
-			emailClient.send({
+			client.send({
 				from: 'mock@email.com',
 				to: 'mock@email.com',
 				template: 'test.hbs'
 			});
 
-			expect(SendGridMock.SendGridSendSpy).toHaveBeenNthCalledWith(1, {
+			expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(1, {
 				from: 'mock@email.com',
 				to: 'mock@email.com',
 				html: undefined
 			});
-			expect(HandleBarsMock.HandlebarsTemplateSpy).toHaveBeenCalled();
+			expect(HbsMock.TemplateSpy).toHaveBeenCalled();
 		});
 
 		it('Should call getCompiledHtml if template is provided [mjml]', () => {
 			FsMock.StaticFiles = ['test.mjml'];
 
-			const emailClient = new EmailClient({ api_key: '', transporter: 'sendgrid', templateDir: './mockDir' });
+			const client = new EmailClient({ api_key: '', transporter: 'sendgrid', templateDir: './mockDir' });
 
-			emailClient.send({
+			client.send({
 				from: 'mock@email.com',
 				to: 'mock@email.com',
 				template: 'test.mjml'
 			});
 
-			expect(SendGridMock.SendGridSendSpy).toHaveBeenNthCalledWith(1, {
+			expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(1, {
 				from: 'mock@email.com',
 				to: 'mock@email.com',
 				html: 'html'
 			});
-			expect(HandleBarsMock.HandlebarsTemplateSpy).toHaveBeenCalled();
+			expect(HbsMock.TemplateSpy).toHaveBeenCalled();
 			expect(MjmlCompileSpy).toHaveBeenCalled();
 		});
 
 		it('Should throw error if the requested template was not present on the directory', () => {
-			const emailClient = new EmailClient({ api_key: '', transporter: 'sendgrid' });
+			const client = new EmailClient({ api_key: '', transporter: 'sendgrid' });
 
 			expect.assertions(1);
 
 			try {
-				emailClient.send({
+				client.send({
 					from: 'mock@email.com',
 					to: 'mock@email.com',
 					template: 'test'
@@ -161,7 +161,7 @@ describe('EmailClient', () => {
 				transporter: 'sendgrid'
 			});
 
-			expect(SendGridMock.SendGridConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
+			expect(SendGridMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
 		});
 
 		it('Should instantiate mailgun transporter', () => {
@@ -170,7 +170,7 @@ describe('EmailClient', () => {
 				transporter: 'mailgun'
 			});
 
-			expect(MailGunMock.MailGunConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
+			expect(MailGunMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
 		});
 
 		it('Should throw error if not supported transporter', () => {
@@ -199,10 +199,10 @@ describe('EmailClient', () => {
 			});
 
 			expect(FsMock.ReaddirSyncSpy).toHaveBeenNthCalledWith(1, './mockDir');
-			expect(HandleBarsMock.HandlebarsCompileSpy).toHaveBeenCalledWith('./mockDir/test.hbs');
-			expect(HandleBarsMock.HandlebarsCompileSpy).toHaveBeenCalledWith('./mockDir/test2.mjml');
-			expect(HandleBarsMock.HandlebarsCompileSpy).toHaveBeenCalledWith('./mockDir/test3.handlebars');
-			expect(HandleBarsMock.HandlebarsCompileSpy).toHaveBeenCalledTimes(3);
+			expect(HbsMock.CompileSpy).toHaveBeenCalledWith('./mockDir/test.hbs');
+			expect(HbsMock.CompileSpy).toHaveBeenCalledWith('./mockDir/test2.mjml');
+			expect(HbsMock.CompileSpy).toHaveBeenCalledWith('./mockDir/test3.handlebars');
+			expect(HbsMock.CompileSpy).toHaveBeenCalledTimes(3);
 		});
 
 		it('Should not call the compileTemplates if templateDir is not provided', () => {
@@ -237,7 +237,7 @@ describe('EmailClient', () => {
 
 			client.configureHandlebars({ helpers });
 
-			expect(HandleBarsMock.RegisterHelperSpy).toHaveBeenCalledTimes(2);
+			expect(HbsMock.RegisterHelperSpy).toHaveBeenCalledTimes(2);
 		});
 
 		it('Should call the configure function', () => {

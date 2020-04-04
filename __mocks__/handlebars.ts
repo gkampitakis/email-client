@@ -1,18 +1,18 @@
-export class Handlebars {
-	public static HandlebarsCompileSpy = jest.fn();
-	public static HandlebarsTemplateSpy = jest.fn();
+export class Hbs {
+	public static CompileSpy = jest.fn();
+	public static TemplateSpy = jest.fn();
 	public static RegisterHelperSpy = jest.fn();
 
 	public static compile(file: any): any {
-		Handlebars.HandlebarsCompileSpy(file);
+		Hbs.CompileSpy(file);
 
-		return Handlebars.HandlebarsTemplateSpy;
+		return Hbs.TemplateSpy;
 	}
 
 	public static registerHelper(name: string, helperFunc: any): void {
-		Handlebars.RegisterHelperSpy(name, helperFunc);
+		Hbs.RegisterHelperSpy(name, helperFunc);
 		return;
 	}
 }
 
-export default Handlebars;
+export default Hbs;

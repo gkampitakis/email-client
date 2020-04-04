@@ -1,28 +1,28 @@
 class SendGrid {
-	public static SendGridSendSpy = jest.fn();
-	public static SendGridConstructorSpy = jest.fn();
+	public static SendSpy = jest.fn();
+	public static ConstructorSpy = jest.fn();
 
 	public constructor(configuration: any) {
-		SendGrid.SendGridConstructorSpy(configuration);
+		SendGrid.ConstructorSpy(configuration);
 	}
 
 	public send(message: any): Promise<any> {
-		SendGrid.SendGridSendSpy(message);
+		SendGrid.SendSpy(message);
 
 		return Promise.resolve(message);
 	}
 }
 
 class MailGun {
-	public static MailGunSendSpy = jest.fn();
-	public static MailGunConstructorSpy = jest.fn();
+	public static SendSpy = jest.fn();
+	public static ConstructorSpy = jest.fn();
 
 	public constructor(configuration: any) {
-		MailGun.MailGunConstructorSpy(configuration);
+		MailGun.ConstructorSpy(configuration);
 	}
 
 	public send(message: any): Promise<any> {
-		MailGun.MailGunSendSpy(message);
+		MailGun.SendSpy(message);
 
 		return Promise.resolve(message);
 	}
