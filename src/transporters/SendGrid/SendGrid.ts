@@ -3,8 +3,8 @@ import { send, setApiKey } from '@sendgrid/mail';
 
 export default class SendGrid extends Transporter {
 	constructor(configuration: any) {
-		setApiKey(configuration.api_key);
 		super(configuration);
+		setApiKey(configuration.api_key);
 	}
 
 	public send(message: any): Promise<any> {

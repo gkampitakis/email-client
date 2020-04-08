@@ -5,7 +5,7 @@ import fs from 'fs';
 import handlebars, { HelperDelegate } from 'handlebars';
 import mjml2html from 'mjml';
 
-interface EmailClientConfiguration {
+interface EmailClientConfiguration extends ExtendableObject {
 	transporter: Transporter;
 	api_key: string;
 	templateDir?: string;
