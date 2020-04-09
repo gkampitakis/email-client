@@ -11,7 +11,7 @@ interface EmailClientConfiguration extends ExtendableObject {
 	templateDir?: string;
 }
 
-type Transporter = 'mailgun' | 'sendgrid';
+type Transporter = 'mailgun' | 'sendgrid' | 'postmark';
 
 interface ExtendableObject {
 	[key: string]: any;
@@ -45,7 +45,6 @@ export default class EmailClient {
 			message.html = this.getCompiledHtml(message.template, message.data);
 			delete message.template;
 		}
-
 		return EmailClient._transporter.send(message);
 	}
 

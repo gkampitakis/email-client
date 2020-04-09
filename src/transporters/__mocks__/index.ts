@@ -19,6 +19,27 @@ class SendGrid {
 	}
 }
 
+class PostMark {
+	public static SendSpy = jest.fn();
+	public static GetSpy = jest.fn();
+	public static ConstructorSpy = jest.fn();
+
+	public constructor(configuration: any) {
+		PostMark.ConstructorSpy(configuration);
+	}
+
+	public send(message: any): Promise<any> {
+		PostMark.SendSpy(message);
+
+		return Promise.resolve(message);
+	}
+
+	public get(): any {
+		PostMark.GetSpy();
+		return null;
+	}
+}
+
 class MailGun {
 	public static SendSpy = jest.fn();
 	public static ConstructorSpy = jest.fn();
@@ -42,5 +63,6 @@ class MailGun {
 
 export const Transporters = {
 	sendgrid: SendGrid,
-	mailgun: MailGun
+	mailgun: MailGun,
+	postmark: PostMark
 };

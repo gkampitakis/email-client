@@ -6,7 +6,9 @@ jest.mock('handlebars');
 jest.mock('mjml');
 
 describe('EmailClient', () => {
-	const { sendgrid: SendGridMock, mailgun: MailGunMock } = jest.requireMock('../transporters').Transporters,
+	const { sendgrid: SendGridMock, mailgun: MailGunMock, postmark: PostmarkMock } = jest.requireMock(
+			'../transporters'
+		).Transporters,
 		FsMock = jest.requireMock('fs').Fs,
 		HbsMock = jest.requireMock('handlebars').Hbs,
 		{ MjmlCompileSpy } = jest.requireMock('mjml');
@@ -22,6 +24,7 @@ describe('EmailClient', () => {
 		HbsMock.CompileSpy.mockClear();
 		HbsMock.TemplateSpy.mockClear();
 		MjmlCompileSpy.mockClear();
+		PostmarkMock.ConstructorSpy.mockClear();
 
 		FsMock.StaticFiles = [];
 	});
@@ -43,6 +46,15 @@ describe('EmailClient', () => {
 			});
 
 			expect(MailGunMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
+		});
+
+		it('Should instantiate postmark transporter', () => {
+			new EmailClient({
+				api_key: '',
+				transporter: 'postmark'
+			});
+
+			expect(PostmarkMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
 		});
 
 		it('Should throw error if not supported transporter', () => {
@@ -211,6 +223,17 @@ describe('EmailClient', () => {
 			client.getTransporter();
 
 			expect(MailGunMock.GetSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('Should return postmark transporter', () => {
+			const client = new EmailClient({
+				api_key: '',
+				transporter: 'postmark'
+			});
+
+			client.getTransporter();
+
+			expect(PostmarkMock.GetSpy).toHaveBeenCalledTimes(1);
 		});
 	});
 

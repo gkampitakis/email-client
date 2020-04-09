@@ -23,9 +23,10 @@
 		"@commitlint/cli": "^8.3.5",
 		"@commitlint/config-conventional": "^8.3.4",
 		"@types/jest": "^25.2.1",
+		"@types/node": "^13.11.0",
+		"@types/postmark": "^2.0.3",
 		"@typescript-eslint/eslint-plugin": "^2.27.0",
 		"@typescript-eslint/parser": "^2.27.0",
-		"@types/node": "^13.11.0",
 		"eslint": "^6.8.0",
 		"eslint-config-airbnb-base": "^14.1.0",
 		"eslint-plugin-import": "^2.20.2",
@@ -42,7 +43,8 @@
 		"@sendgrid/mail": "^7.0.0",
 		"handlebars": "^4.7.6",
 		"mailgun-js": "^0.22.0",
-		"mjml": "^4.6.2"
+		"mjml": "^4.6.2",
+		"postmark": "^2.5.1"
 	},
 	"files": [
 		"lib/**/*"
