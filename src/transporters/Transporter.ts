@@ -6,4 +6,6 @@ export abstract class Transporter {
 	}
 
 	public abstract send(message: any): Promise<any>;
+
+	public abstract get(): any;
 }

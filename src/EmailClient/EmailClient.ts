@@ -36,7 +36,7 @@ export default class EmailClient {
 
 	constructor(configuration: EmailClientConfiguration) {
 		const { transporter, templateDir, ...rest } = configuration;
-		this.transporter(transporter, rest);
+		this.setTransporter(transporter, rest);
 		this.setTemplates(templateDir);
 	}
 
@@ -49,10 +49,14 @@ export default class EmailClient {
 		return EmailClient._transporter.send(message);
 	}
 
-	public transporter(transporter: Transporter, configuration: any) {
+	public setTransporter(transporter: Transporter, configuration: any) {
 		if (!Transporters[transporter])
 			throw new Error('Not supported transporter' + transporter + '.\nCurrently you can use [Sendgrid, Mailgun]');
 		EmailClient._transporter = new Transporters[transporter](configuration);
+	}
+
+	public getTransporter(): any {
+		return EmailClient._transporter.get();
 	}
 
 	public setTemplates(templateDir: string | undefined) {

@@ -36,4 +36,13 @@ describe('SendGrid', () => {
 		});
 		expect(SetApiKeySpy).toHaveBeenNthCalledWith(1, 'mockApiKey');
 	});
+
+	it('Should return sendgrid', () => {
+		const transporter = new SendGrid({ api_key: 'mockApiKey' });
+
+		expect(transporter.get()).toEqual({
+			send: expect.any(Function),
+			setApiKey: expect.any(Function)
+		});
+	});
 });

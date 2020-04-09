@@ -24,6 +24,10 @@ export default class MailGun extends Transporter {
 		});
 	}
 
+	public get(): any {
+		return this.mailGun;
+	}
+
 	private setupMailgun(auth: Partial<MailgunAuth>) {
 		this.mailGun = mailgun({
 			apiKey: auth.api_key,

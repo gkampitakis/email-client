@@ -1,5 +1,6 @@
 class SendGrid {
 	public static SendSpy = jest.fn();
+	public static GetSpy = jest.fn();
 	public static ConstructorSpy = jest.fn();
 
 	public constructor(configuration: any) {
@@ -11,11 +12,17 @@ class SendGrid {
 
 		return Promise.resolve(message);
 	}
+
+	public get(): any {
+		SendGrid.GetSpy();
+		return null;
+	}
 }
 
 class MailGun {
 	public static SendSpy = jest.fn();
 	public static ConstructorSpy = jest.fn();
+	public static GetSpy = jest.fn();
 
 	public constructor(configuration: any) {
 		MailGun.ConstructorSpy(configuration);
@@ -25,6 +32,11 @@ class MailGun {
 		MailGun.SendSpy(message);
 
 		return Promise.resolve(message);
+	}
+
+	public get(): any {
+		MailGun.GetSpy();
+		return null;
 	}
 }
 

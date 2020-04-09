@@ -13,8 +13,10 @@ describe('EmailClient', () => {
 
 	beforeEach(() => {
 		MailGunMock.SendSpy.mockClear();
+		MailGunMock.GetSpy.mockClear();
 		MailGunMock.ConstructorSpy.mockClear();
 		SendGridMock.SendSpy.mockClear();
+		SendGridMock.GetSpy.mockClear();
 		SendGridMock.ConstructorSpy.mockClear();
 		FsMock.ReaddirSyncSpy.mockClear();
 		HbsMock.CompileSpy.mockClear();
@@ -154,7 +156,7 @@ describe('EmailClient', () => {
 		});
 	});
 
-	describe('Transporter', () => {
+	describe('SetTransporter', () => {
 		it('Should instantiate sendgrid transporter', () => {
 			new EmailClient({
 				api_key: '',
@@ -185,6 +187,30 @@ describe('EmailClient', () => {
 			} catch (error) {
 				expect(error).not.toBeUndefined();
 			}
+		});
+	});
+
+	describe('GetTransporter', () => {
+		it('Should return sendgrid transporter', () => {
+			const client = new EmailClient({
+				api_key: '',
+				transporter: 'sendgrid'
+			});
+
+			client.getTransporter();
+
+			expect(SendGridMock.GetSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('Should return mailgun transporter', () => {
+			const client = new EmailClient({
+				api_key: '',
+				transporter: 'mailgun'
+			});
+
+			client.getTransporter();
+
+			expect(MailGunMock.GetSpy).toHaveBeenCalledTimes(1);
 		});
 	});
 

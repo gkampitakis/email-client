@@ -1,10 +1,10 @@
 import { Transporter } from '../Transporter';
-import { send, setApiKey } from '@sendgrid/mail';
+import sendgrid from '@sendgrid/mail';
 
 export default class SendGrid extends Transporter {
 	constructor(configuration: any) {
 		super(configuration);
-		setApiKey(configuration.api_key);
+		sendgrid.setApiKey(configuration.api_key);
 	}
 
 	public send(message: any): Promise<any> {
@@ -20,6 +20,10 @@ export default class SendGrid extends Transporter {
 			}
 		];
 
-		return send(data);
+		return sendgrid.send(data);
+	}
+
+	public get(): any {
+		return sendgrid;
 	}
 }

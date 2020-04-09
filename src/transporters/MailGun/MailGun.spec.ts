@@ -12,7 +12,7 @@ describe('MailGun', () => {
 	});
 
 	it('Should initialize mailgun', () => {
-		const transporter = new MailGun({ api_key: 'mockKey', domain: 'mockDomain' });
+		new MailGun({ api_key: 'mockKey', domain: 'mockDomain' });
 
 		expect(MailGunSpy).toHaveBeenNthCalledWith(1, { apiKey: 'mockKey', domain: 'mockDomain' });
 	});
@@ -45,5 +45,11 @@ describe('MailGun', () => {
 			};
 
 		expect(transporter.send(message)).rejects.toThrow(Error('MockError'));
+	});
+
+	it('Should return mailgun', () => {
+		const transporter = new MailGun({ api_key: 'mockKey', domain: 'mockDomain' });
+
+		expect(transporter.get().messages).toBeInstanceOf(Function);
 	});
 });
