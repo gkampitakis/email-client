@@ -43,6 +43,7 @@
 		"@sendgrid/mail": "^7.0.0",
 		"handlebars": "^4.7.6",
 		"mailgun-js": "^0.22.0",
+		"mandrill-api": "^1.0.45",
 		"mjml": "^4.6.2",
 		"postmark": "^2.5.1"
 	},

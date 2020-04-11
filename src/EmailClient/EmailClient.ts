@@ -11,7 +11,7 @@ interface EmailClientConfiguration extends ExtendableObject {
 	templateDir?: string;
 }
 
-type Transporter = 'mailgun' | 'sendgrid' | 'postmark';
+type Transporter = 'mailgun' | 'sendgrid' | 'postmark' | 'mandrill';
 
 interface ExtendableObject {
 	[key: string]: any;
@@ -22,6 +22,7 @@ interface Message {
 	to: string;
 	template?: string;
 	data?: object;
+	name?: string;
 }
 
 interface HandlebarsConfiguration {
