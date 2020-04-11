@@ -8,6 +8,14 @@ export default class SendGrid extends Transporter {
 	}
 
 	public send(message: any): Promise<any> {
+		return sendgrid.send(this.messageTransform(message) as any);
+	}
+
+	public get(): any {
+		return sendgrid;
+	}
+
+	protected messageTransform(message: any): {} {
 		let { html, text, ...data } = message;
 		data.content = [
 			{
@@ -20,10 +28,6 @@ export default class SendGrid extends Transporter {
 			}
 		];
 
-		return sendgrid.send(data);
-	}
-
-	public get(): any {
-		return sendgrid;
+		return data;
 	}
 }

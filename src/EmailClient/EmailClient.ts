@@ -4,6 +4,8 @@ import SendGrid from '../transporters/SendGrid/SendGrid';
 import fs from 'fs';
 import handlebars, { HelperDelegate } from 'handlebars';
 import mjml2html from 'mjml';
+import Mandrill from '../transporters/Mandrill/Mandrill';
+import Postmark from '../transporters/Postmark/Postmark';
 
 interface EmailClientConfiguration extends ExtendableObject {
 	transporter: Transporter;
@@ -31,7 +33,7 @@ interface HandlebarsConfiguration {
 }
 
 export default class EmailClient {
-	private static _transporter: MailGun | SendGrid;
+	private static _transporter: MailGun | SendGrid | Mandrill | Postmark;
 	private static templates: Map<string, HandlebarsTemplateDelegate<any>> = new Map();
 	private static handlebars = handlebars;
 

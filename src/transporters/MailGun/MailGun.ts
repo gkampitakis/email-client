@@ -16,7 +16,7 @@ export default class MailGun extends Transporter {
 
 	public send(message: any): Promise<any> {
 		return new Promise((resolve, reject) => {
-			this.mailGun.messages().send(message, (err: Error, body: any) => {
+			this.mailGun.messages().send(this.messageTransform(message), (err: Error, body: any) => {
 				if (err) return reject(err);
 
 				resolve(body);
@@ -33,5 +33,9 @@ export default class MailGun extends Transporter {
 			apiKey: auth.api_key,
 			domain: auth.domain
 		});
+	}
+
+	protected messageTransform(message: any): {} {
+		return message;
 	}
 }

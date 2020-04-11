@@ -9,16 +9,23 @@ export default class Postmark extends Transporter {
 	}
 
 	public send(message: any): Promise<any> {
-		return this.client.sendEmail({
-			From: message.from,
-			To: message.to,
-			Subject: message.subject,
-			TextBody: message.text,
-			HtmlBody: message.html
-		});
+		return this.client.sendEmail(this.messageTransform(message));
 	}
 
 	public get(): any {
 		return this.client;
+	}
+
+	protected messageTransform(message: any): {} {
+		const { from, to, subject, text, html, ...rest } = message;
+
+		return {
+			From: from,
+			To: to,
+			Subject: subject,
+			TextBody: text,
+			HtmlBody: html,
+			...rest
+		};
 	}
 }

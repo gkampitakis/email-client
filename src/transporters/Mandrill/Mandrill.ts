@@ -12,7 +12,7 @@ export default class Mandrill extends Transporter {
 	public send(message: any): Promise<any> {
 		return new Promise(async (resolve, reject) => {
 			await this.client.messages.send(
-				{ message: this.mandrillMessage(message), async: true },
+				{ message: this.messageTransform(message), async: true },
 				(res) => resolve(res),
 				(err) => reject(err)
 			);
@@ -23,7 +23,7 @@ export default class Mandrill extends Transporter {
 		return this.client;
 	}
 
-	private mandrillMessage(message: any) {
+	protected messageTransform(message: any): {} {
 		const { from, name, ...rest } = message;
 
 		return {
