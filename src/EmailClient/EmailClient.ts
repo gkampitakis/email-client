@@ -33,7 +33,8 @@ interface HandlebarsConfiguration {
 }
 
 export default class EmailClient {
-	private static _transporter: MailGun | SendGrid | Mandrill | Postmark;
+	//@ts-ignore
+	private _transporter: MailGun | SendGrid | Mandrill | Postmark;
 	private static templates: Map<string, HandlebarsTemplateDelegate<any>> = new Map();
 	private static handlebars = handlebars;
 
@@ -48,17 +49,17 @@ export default class EmailClient {
 			message.html = this.getCompiledHtml(message.template, message.data);
 			delete message.template;
 		}
-		return EmailClient._transporter.send(message);
+		return this._transporter.send(message);
 	}
 
 	public setTransporter(transporter: Transporter, configuration: any) {
 		if (!Transporters[transporter])
 			throw new Error('Not supported transporter' + transporter + '.\nCurrently you can use [Sendgrid, Mailgun]');
-		EmailClient._transporter = new Transporters[transporter](configuration);
+		this._transporter = new Transporters[transporter](configuration);
 	}
 
 	public getTransporter(): any {
-		return EmailClient._transporter.get();
+		return this._transporter.get();
 	}
 
 	public setTemplates(templateDir: string | undefined) {
