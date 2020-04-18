@@ -1,6 +1,7 @@
 # Email Client
 
 [![Codecov Coverage](https://img.shields.io/codecov/c/github/gkampitakis/email-client)](https://codecov.io/gh/gkampitakis/email-client)
+[![Build Status](https://travis-ci.org/gkampitakis/email-client.svg?branch=master)](https://travis-ci.org/gkampitakis/email-client)
 
 A library written in typescript. using various clients in order to send emails from your nodejs server. Supports the send of html template as well.
 

@@ -11,7 +11,8 @@
 		"eslint": "eslint src/**/*.ts",
 		"clean": "rimraf ./lib ./coverage",
 		"prepublishOnly": "npm run build",
-		"dev": "ts-node-dev --respawn --transpileOnly ./playground/playground.ts"
+		"dev": "ts-node-dev --respawn --transpileOnly ./playground/playground.ts",
+		"release": "semantic-release"
 	},
 	"keywords": [
 		"email",
@@ -20,6 +21,12 @@
 	"author": "Georgios Kampitakis",
 	"license": "ISC",
 	"devDependencies": {
+		"@semantic-release/changelog": "^5.0.0",
+		"@semantic-release/commit-analyzer": "^8.0.1",
+		"@semantic-release/git": "^9.0.0",
+		"@semantic-release/npm": "^7.0.5",
+		"@semantic-release/release-notes-generator": "^9.0.1",
+		"semantic-release": "^17.0.4",
 		"@commitlint/cli": "^8.3.5",
 		"@commitlint/config-conventional": "^8.3.4",
 		"@types/jest": "^25.2.1",
