@@ -16,7 +16,7 @@ export default class SendGrid extends Transporter {
 	}
 
 	protected messageTransform(message: any): {} {
-		let { html, text, ...data } = message;
+		const { html, text, ...data } = message;
 		data.content = [
 			{
 				type: 'text/plain',

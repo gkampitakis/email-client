@@ -83,7 +83,7 @@ export default class EmailClient {
 			throw new Error(
 				`${templateName} not found on directory.Verify the path and the supported types[*.hbs, *.handlebars, *.mjml]`
 			);
-
+		//TODO: refactor if more template libraries are supported
 		return templateName.includes('.mjml') ? mjml2html(template(data)).html : template(data);
 	}
 
