@@ -6,6 +6,7 @@ import handlebars, { HelperDelegate } from 'handlebars';
 import mjml2html from 'mjml';
 import Mandrill from '../transporters/Mandrill/Mandrill';
 import Postmark from '../transporters/Postmark/Postmark';
+import AwsSES from '../transporters/AwsSES/AwsSES';
 
 interface EmailClientConfiguration extends ExtendableObject {
 	transporter: Transporter;
@@ -13,7 +14,7 @@ interface EmailClientConfiguration extends ExtendableObject {
 	templateDir?: string;
 }
 
-type Transporter = 'mailgun' | 'sendgrid' | 'postmark' | 'mandrill';
+type Transporter = 'mailgun' | 'sendgrid' | 'postmark' | 'mandrill' | 'aws';
 
 interface ExtendableObject {
 	[key: string]: any;
@@ -34,7 +35,7 @@ interface HandlebarsConfiguration {
 
 export default class EmailClient {
 	//@ts-ignore
-	private _transporter: MailGun | SendGrid | Mandrill | Postmark;
+	private _transporter: MailGun | SendGrid | Mandrill | Postmark | AwsSES;
 	private static templates: Map<string, HandlebarsTemplateDelegate<any>> = new Map();
 	private static handlebars = handlebars;
 

@@ -10,7 +10,8 @@ describe('EmailClient', () => {
 			sendgrid: SendGridMock,
 			mailgun: MailGunMock,
 			postmark: PostmarkMock,
-			mandrill: MandrillMock
+			mandrill: MandrillMock,
+			aws: AwsSESMock
 		} = jest.requireMock('../transporters').Transporters,
 		FsMock = jest.requireMock('fs').Fs,
 		HbsMock = jest.requireMock('handlebars').Hbs,
@@ -30,6 +31,8 @@ describe('EmailClient', () => {
 		PostmarkMock.ConstructorSpy.mockClear();
 		MandrillMock.ConstructorSpy.mockClear();
 		MandrillMock.GetSpy.mockClear();
+		AwsSESMock.GetSpy.mockClear();
+		AwsSESMock.ConstructorSpy.mockClear();
 
 		FsMock.StaticFiles = [];
 	});
@@ -62,13 +65,22 @@ describe('EmailClient', () => {
 			expect(PostmarkMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
 		});
 
-		it('Should instantiate postmark transporter', () => {
+		it('Should instantiate mandrill transporter', () => {
 			new EmailClient({
 				api_key: '',
 				transporter: 'mandrill'
 			});
 
 			expect(MandrillMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
+		});
+
+		it('Should instantiate aws transporter', () => {
+			new EmailClient({
+				api_key: '',
+				transporter: 'aws'
+			});
+
+			expect(AwsSESMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
 		});
 
 		it('Should throw error if not supported transporter', () => {
@@ -201,6 +213,15 @@ describe('EmailClient', () => {
 			expect(MailGunMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
 		});
 
+		it('Should instantiate aws transporter', () => {
+			new EmailClient({
+				api_key: '',
+				transporter: 'aws'
+			});
+
+			expect(AwsSESMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
+		});
+
 		it('Should throw error if not supported transporter', () => {
 			expect.assertions(1);
 
@@ -259,6 +280,17 @@ describe('EmailClient', () => {
 			client.getTransporter();
 
 			expect(MandrillMock.GetSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('Should return aws transporter', () => {
+			const client = new EmailClient({
+				api_key: '',
+				transporter: 'aws'
+			});
+
+			client.getTransporter();
+
+			expect(AwsSESMock.GetSpy).toHaveBeenCalledTimes(1);
 		});
 	});
 
