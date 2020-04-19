@@ -1,12 +1,12 @@
-import { Transporters } from '../transporters';
-import MailGun from '../transporters/MailGun/MailGun';
-import SendGrid from '../transporters/SendGrid/SendGrid';
+import { Transporters } from '../Transporters';
+import MailGun from '../Transporters/MailGun/MailGun';
+import SendGrid from '../Transporters/SendGrid/SendGrid';
 import fs from 'fs';
 import handlebars, { HelperDelegate } from 'handlebars';
 import mjml2html from 'mjml';
-import Mandrill from '../transporters/Mandrill/Mandrill';
-import Postmark from '../transporters/Postmark/Postmark';
-import AwsSES from '../transporters/AwsSES/AwsSES';
+import Mandrill from '../Transporters/Mandrill/Mandrill';
+import Postmark from '../Transporters/Postmark/Postmark';
+import AwsSES from '../Transporters/AwsSES/AwsSES';
 
 interface EmailClientConfiguration extends ExtendableObject {
 	transporter: Transporter;
@@ -87,7 +87,6 @@ export default class EmailClient {
 			throw new Error(
 				`${templateName} not found on directory.Verify the path and the supported types[*.hbs, *.handlebars, *.mjml]`
 			);
-		//TODO: refactor if more template libraries are supported
 		return templateName.includes('.mjml') ? mjml2html(template(data)).html : template(data);
 	}
 
