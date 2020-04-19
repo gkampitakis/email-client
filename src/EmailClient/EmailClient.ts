@@ -10,7 +10,7 @@ import AwsSES from '../transporters/AwsSES/AwsSES';
 
 interface EmailClientConfiguration extends ExtendableObject {
 	transporter: Transporter;
-	api_key: string;
+	api_key?: string;
 	templateDir?: string;
 }
 
@@ -26,6 +26,8 @@ interface Message {
 	template?: string;
 	data?: object;
 	name?: string;
+	subject?: string;
+	text?: string;
 }
 
 interface HandlebarsConfiguration {
