@@ -16,7 +16,7 @@ export default class SendGrid extends Transporter {
 	}
 
 	protected messageTransform(message: any): {} {
-		const { html, text, ...data } = message;
+		const { html, text, _attachments, ...data } = message;
 		data.content = [
 			{
 				type: 'text/plain',
@@ -27,6 +27,8 @@ export default class SendGrid extends Transporter {
 				value: html
 			}
 		];
+
+		if (_attachments) data.attachments = _attachments;
 
 		return data;
 	}

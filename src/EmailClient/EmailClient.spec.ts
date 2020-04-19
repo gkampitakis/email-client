@@ -4,6 +4,7 @@ jest.mock('../transporters');
 jest.mock('fs');
 jest.mock('handlebars');
 jest.mock('mjml');
+jest.mock('../AttachmentFactory/AttachmentFactory');
 
 describe('EmailClient', () => {
 	const {
@@ -15,7 +16,8 @@ describe('EmailClient', () => {
 		} = jest.requireMock('../transporters').Transporters,
 		FsMock = jest.requireMock('fs').Fs,
 		HbsMock = jest.requireMock('handlebars').Hbs,
-		{ MjmlCompileSpy } = jest.requireMock('mjml');
+		{ MjmlCompileSpy } = jest.requireMock('mjml'),
+		AttachmentFactoryMock = jest.requireMock('../AttachmentFactory/AttachmentFactory').AttachmentFactory;
 
 	beforeEach(() => {
 		MailGunMock.SendSpy.mockClear();
@@ -33,6 +35,7 @@ describe('EmailClient', () => {
 		MandrillMock.GetSpy.mockClear();
 		AwsSESMock.GetSpy.mockClear();
 		AwsSESMock.ConstructorSpy.mockClear();
+		AttachmentFactoryMock.TransformFilesSpy.mockClear();
 
 		FsMock.StaticFiles = [];
 	});
@@ -124,10 +127,10 @@ describe('EmailClient', () => {
 	});
 
 	describe('Send', () => {
-		it('Should not call getCompiledHtml if no template is provided', () => {
+		it('Should not call getCompiledHtml if no template is provided', async () => {
 			const client = new EmailClient({ api_key: '', transporter: 'sendgrid' });
 
-			client.send({
+			await client.send({
 				from: 'mock@email.com',
 				to: 'mock@email.com'
 			});
@@ -138,12 +141,12 @@ describe('EmailClient', () => {
 			});
 		});
 
-		it('Should call getCompiledHtml if template is provided [handlebars, hbs]', () => {
+		it('Should call getCompiledHtml if template is provided [handlebars, hbs]', async () => {
 			FsMock.StaticFiles = ['test.hbs'];
 
 			const client = new EmailClient({ api_key: '', transporter: 'sendgrid', templateDir: './mockDir' });
 
-			client.send({
+			await client.send({
 				from: 'mock@email.com',
 				to: 'mock@email.com',
 				template: 'test.hbs'
@@ -157,12 +160,12 @@ describe('EmailClient', () => {
 			expect(HbsMock.TemplateSpy).toHaveBeenCalled();
 		});
 
-		it('Should call getCompiledHtml if template is provided [mjml]', () => {
+		it('Should call getCompiledHtml if template is provided [mjml]', async () => {
 			FsMock.StaticFiles = ['test.mjml'];
 
 			const client = new EmailClient({ api_key: '', transporter: 'sendgrid', templateDir: './mockDir' });
 
-			client.send({
+			await client.send({
 				from: 'mock@email.com',
 				to: 'mock@email.com',
 				template: 'test.mjml'
@@ -177,13 +180,13 @@ describe('EmailClient', () => {
 			expect(MjmlCompileSpy).toHaveBeenCalled();
 		});
 
-		it('Should throw error if the requested template was not present on the directory', () => {
+		it('Should throw error if the requested template was not present on the directory', async () => {
 			const client = new EmailClient({ api_key: '', transporter: 'sendgrid' });
 
 			expect.assertions(1);
 
 			try {
-				client.send({
+				await client.send({
 					from: 'mock@email.com',
 					to: 'mock@email.com',
 					template: 'test'
@@ -191,6 +194,24 @@ describe('EmailClient', () => {
 			} catch (error) {
 				expect(error).not.toBeUndefined();
 			}
+		});
+
+		it('Should call attachmentFactory if attachments provided', async () => {
+			const client = new EmailClient({ api_key: '', transporter: 'sendgrid' });
+			await client.send({
+				from: 'mock@email.com',
+				to: 'mock@email.com',
+				attachments: [{ name: 'mockFile', path: 'mock/path' }]
+			});
+
+			expect(AttachmentFactoryMock.TransformFilesSpy).toHaveBeenNthCalledWith(1, [
+				{ name: 'mockFile', path: 'mock/path' }
+			]);
+			expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(1, {
+				from: 'mock@email.com',
+				to: 'mock@email.com',
+				_attachments: [{ name: 'mockFile', path: 'mock/path' }]
+			});
 		});
 	});
 

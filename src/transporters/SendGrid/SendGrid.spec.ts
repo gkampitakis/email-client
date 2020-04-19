@@ -10,7 +10,7 @@ describe('SendGrid', () => {
 		SetApiKeySpy.mockClear();
 	});
 
-	it('should call the send message', () => {
+	it('Should call the send message', () => {
 		const transporter = new SendGrid({ api_key: 'mockApiKey' });
 
 		transporter.send({
@@ -35,6 +35,34 @@ describe('SendGrid', () => {
 			]
 		});
 		expect(SetApiKeySpy).toHaveBeenNthCalledWith(1, 'mockApiKey');
+	});
+
+	it('Should include attachments if present', () => {
+		const transporter = new SendGrid({ api_key: 'mockApiKey' });
+
+		transporter.send({
+			from: 'george',
+			to: 'george',
+			html: '<div>Test</div>',
+			text: 'test',
+			_attachments: ['mockAttachments']
+		});
+
+		expect(SendEmailSpy).toHaveBeenNthCalledWith(1, {
+			from: 'george',
+			to: 'george',
+			content: [
+				{
+					type: 'text/plain',
+					value: 'test'
+				},
+				{
+					type: 'text/html',
+					value: '<div>Test</div>'
+				}
+			],
+			attachments: ['mockAttachments']
+		});
 	});
 
 	it('Should return sendgrid', () => {

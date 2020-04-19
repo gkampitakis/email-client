@@ -1,4 +1,5 @@
 import { Transporters } from '../transporters';
+import AttachmentFactory, { File } from '../AttachmentFactory/AttachmentFactory';
 import MailGun from '../transporters/MailGun/MailGun';
 import SendGrid from '../transporters/SendGrid/SendGrid';
 import fs from 'fs';
@@ -28,6 +29,7 @@ interface Message {
 	name?: string;
 	subject?: string;
 	text?: string;
+	attachments?: File[];
 }
 
 interface HandlebarsConfiguration {
@@ -40,6 +42,7 @@ export default class EmailClient {
 	private _transporter: MailGun | SendGrid | Mandrill | Postmark | AwsSES;
 	private static templates: Map<string, HandlebarsTemplateDelegate<any>> = new Map();
 	private static handlebars = handlebars;
+	private attachmentFactory = new AttachmentFactory();
 
 	constructor(configuration: EmailClientConfiguration) {
 		const { transporter, templateDir, ...rest } = configuration;
@@ -47,12 +50,8 @@ export default class EmailClient {
 		this.setTemplates(templateDir);
 	}
 
-	public send(message: Message & ExtendableObject): Promise<any> {
-		if (message.template) {
-			message.html = this.getCompiledHtml(message.template, message.data);
-			delete message.template;
-		}
-		return this._transporter.send(message);
+	public async send(message: Message & ExtendableObject): Promise<any> {
+		return this._transporter.send(await this.constructMessage(message));
 	}
 
 	public setTransporter(transporter: Transporter, configuration: any) {
@@ -81,13 +80,26 @@ export default class EmailClient {
 		if (configure) configure(EmailClient.handlebars);
 	}
 
+	private async constructMessage(message: Message & ExtendableObject): Promise<{}> {
+		if (message.template) {
+			message.html = this.getCompiledHtml(message.template, message.data);
+			delete message.template;
+		}
+
+		if (message.attachments) {
+			message._attachments = await this.attachmentFactory.transformFiles(message.attachments);
+			delete message.attachments;
+		}
+
+		return message;
+	}
+
 	private getCompiledHtml(templateName: string, data: any) {
 		const template = EmailClient.templates.get(templateName);
 		if (!template)
 			throw new Error(
 				`${templateName} not found on directory.Verify the path and the supported types[*.hbs, *.handlebars, *.mjml]`
 			);
-		//TODO: refactor if more template libraries are supported
 		return templateName.includes('.mjml') ? mjml2html(template(data)).html : template(data);
 	}
 
