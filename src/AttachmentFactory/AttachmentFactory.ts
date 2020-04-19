@@ -4,11 +4,11 @@ import PromiseUtil from '@gkampitakis/promise-util';
 
 interface AttachmentFile {
 	type: string;
-	name: string;
+	filename: string;
 	content: string;
 }
 
-interface File {
+export interface File {
 	name: string;
 	path: string;
 }
@@ -23,7 +23,7 @@ export default class AttachmentFactory {
 
 			return {
 				type: result?.mime,
-				name: file.name,
+				filename: file.name,
 				content
 			};
 		});

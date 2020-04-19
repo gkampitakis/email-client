@@ -29,8 +29,8 @@ describe('Attachment Factory', () => {
 		expect(FsMock.ReadFileSyncSpy).toHaveBeenCalledWith('a/random/path2');
 
 		expect(res).toEqual([
-			{ type: 'image/png', name: 'test.png', content: 'a/random/path' },
-			{ type: 'image/png', name: 'test2.png', content: 'a/random/path2' }
+			{ type: 'image/png', filename: 'test.png', content: 'a/random/path' },
+			{ type: 'image/png', filename: 'test2.png', content: 'a/random/path2' }
 		]);
 	});
 
@@ -41,7 +41,7 @@ describe('Attachment Factory', () => {
 
 		const res = await factory.transformFiles([{ name: 'test.png', path: 'a/random/path' }]);
 
-		expect(res).toEqual([{ type: undefined, name: 'test.png', content: 'a/random/path' }]);
+		expect(res).toEqual([{ type: undefined, filename: 'test.png', content: 'a/random/path' }]);
 	});
 
 	it('Should return an empty array', async () => {
