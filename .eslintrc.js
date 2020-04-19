@@ -19,6 +19,8 @@ module.exports = {
 				maxEOF: 1
 			}
 		],
+		'no-empty-function': 'off',
+		'@typescript-eslint/no-empty-function': ['warn'],
 		'@typescript-eslint/ban-ts-ignore': ['off'],
 		'@typescript-eslint/interface-name-prefix': ['error', 'never'],
 		'@typescript-eslint/explicit-function-return-type': ['off'],

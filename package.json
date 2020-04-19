@@ -48,8 +48,10 @@
 		"typescript": "^3.8.3"
 	},
 	"dependencies": {
+		"@gkampitakis/promise-util": "^1.0.0",
 		"@sendgrid/mail": "^7.0.0",
 		"aws-sdk": "^2.658.0",
+		"file-type": "^14.1.4",
 		"handlebars": "^4.7.6",
 		"mailgun-js": "^0.22.0",
 		"mandrill-api": "^1.0.45",
