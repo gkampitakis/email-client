@@ -24,7 +24,27 @@ export default class Mandrill extends Transporter {
 	}
 
 	protected messageTransform(message: any): {} {
-		const { from, name, ...rest } = message;
+		const { from, name, cc = [], bcc = [], to: _to, _attachments = [], ...rest } = message,
+			to: { email: string; type: 'to' | 'cc' | 'bcc' }[] = [];
+
+		to.push({
+			email: _to,
+			type: 'to'
+		});
+
+		cc.forEach((recipient) => {
+			to.push({
+				email: recipient,
+				type: 'cc'
+			});
+		});
+
+		bcc.forEach((recipient) => {
+			to.push({
+				email: recipient,
+				type: 'bcc'
+			});
+		});
 
 		return {
 			from_email: message.from,
@@ -32,6 +52,8 @@ export default class Mandrill extends Transporter {
 			headers: {
 				'Reply-To': message.replyTo
 			},
+			to,
+			...(_attachments.length && { attachments: _attachments }),
 			...rest
 		};
 	}

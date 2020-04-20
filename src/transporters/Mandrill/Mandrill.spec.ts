@@ -20,7 +20,9 @@ describe('Mandrill', () => {
 			to: 'george',
 			html: '<div>Test</div>',
 			text: 'test',
-			subject: 'test'
+			subject: 'test',
+			bcc: ['mock@mail.com'],
+			cc: ['mock@mail.com']
 		});
 
 		expect(MandrillMock.SendSpy).toHaveBeenNthCalledWith(1, {
@@ -28,7 +30,11 @@ describe('Mandrill', () => {
 				text: 'test',
 				html: '<div>Test</div>',
 				subject: 'test',
-				to: 'george',
+				to: [
+					{ email: 'george', type: 'to' },
+					{ email: 'mock@mail.com', type: 'cc' },
+					{ email: 'mock@mail.com', type: 'bcc' }
+				],
 				from_email: 'george',
 				from_name: undefined,
 				headers: {
@@ -39,6 +45,37 @@ describe('Mandrill', () => {
 		});
 		expect(MandrillMock.ConstructorSpy).toHaveBeenNthCalledWith(1, 'mockApiKey');
 	});
+
+	it('Should include attachments if present', () => {
+		const transporter = new Mandrill({ api_key: 'mockApiKey' });
+
+		transporter.send({
+			from: 'george',
+			to: 'george',
+			html: '<div>Test</div>',
+			text: 'test',
+			subject: 'test',
+			_attachments: ['mockAttachments']
+		});
+
+		expect(MandrillMock.SendSpy).toHaveBeenNthCalledWith(1, {
+			message: {
+				text: 'test',
+				html: '<div>Test</div>',
+				subject: 'test',
+				to: [{ email: 'george', type: 'to' }],
+				from_email: 'george',
+				from_name: undefined,
+				headers: {
+					'Reply-To': undefined
+				},
+				attachments: ['mockAttachments']
+			},
+			async: true
+		});
+	});
+
+	//it('Should include the cc/bcc email addresses to message',()=)
 
 	it('Should reject with error', async () => {
 		MandrillMock.ResponseOptions = true;
