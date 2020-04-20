@@ -64,7 +64,8 @@ describe('AwsSES', () => {
 		transporter.send({
 			from: 'me@gmail.com',
 			to: 'you@gmail.com',
-			CcAddresses: ['test@address.com'],
+			cc: ['test@address.com'],
+			bcc: ['test@address.com'],
 			replyTo: ['test@address.com']
 		});
 
@@ -72,7 +73,7 @@ describe('AwsSES', () => {
 			Destination: {
 				CcAddresses: ['test@address.com'],
 				ToAddresses: ['you@gmail.com'],
-				BccAddresses: []
+				BccAddresses: ['test@address.com']
 			},
 			Message: {
 				Body: {

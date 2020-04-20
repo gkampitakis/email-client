@@ -1,13 +1,13 @@
-import { Transporters } from '../transporters';
 import AttachmentFactory, { File } from '../AttachmentFactory/AttachmentFactory';
 import MailGun from '../transporters/MailGun/MailGun';
 import SendGrid from '../transporters/SendGrid/SendGrid';
+import { Transporters } from '../Transporters';
 import fs from 'fs';
 import handlebars, { HelperDelegate } from 'handlebars';
 import mjml2html from 'mjml';
-import Mandrill from '../transporters/Mandrill/Mandrill';
-import Postmark from '../transporters/Postmark/Postmark';
-import AwsSES from '../transporters/AwsSES/AwsSES';
+import Mandrill from '../Transporters/Mandrill/Mandrill';
+import Postmark from '../Transporters/Postmark/Postmark';
+import AwsSES from '../Transporters/AwsSES/AwsSES';
 
 interface EmailClientConfiguration extends ExtendableObject {
 	transporter: Transporter;

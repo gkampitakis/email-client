@@ -26,13 +26,13 @@ export default class AwsSES extends Transporter {
 	}
 
 	protected messageTransform(message: any): {} {
-		const { from, to, subject = '', html = '', text = '', CcAddresses = [], replyTo = [] } = message;
+		const { from, to, subject = '', html = '', text = '', cc = [], bcc = [], replyTo = [] } = message;
 
 		return {
 			Destination: {
-				CcAddresses,
+				CcAddresses: cc,
 				ToAddresses: [to],
-				BccAddresses: []
+				BccAddresses: bcc
 			},
 			Message: {
 				Body: {
