@@ -65,6 +65,48 @@ describe('SendGrid', () => {
 		});
 	});
 
+	it('Should not include html in message body', () => {
+		const transporter = new SendGrid({ api_key: 'mockApiKey' });
+
+		transporter.send({
+			from: 'george',
+			to: 'george',
+			text: 'test'
+		});
+
+		expect(SendEmailSpy).toHaveBeenNthCalledWith(1, {
+			from: 'george',
+			to: 'george',
+			content: [
+				{
+					type: 'text/plain',
+					value: 'test'
+				}
+			]
+		});
+	});
+
+	it('Should not include text in message body', () => {
+		const transporter = new SendGrid({ api_key: 'mockApiKey' });
+
+		transporter.send({
+			from: 'george',
+			to: 'george',
+			html: '<div>Test</div>'
+		});
+
+		expect(SendEmailSpy).toHaveBeenNthCalledWith(1, {
+			from: 'george',
+			to: 'george',
+			content: [
+				{
+					type: 'text/html',
+					value: '<div>Test</div>'
+				}
+			]
+		});
+	});
+
 	it('Should return sendgrid', () => {
 		const transporter = new SendGrid({ api_key: 'mockApiKey' });
 
