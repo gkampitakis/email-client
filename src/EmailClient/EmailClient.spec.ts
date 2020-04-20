@@ -149,13 +149,17 @@ describe('EmailClient', () => {
 			await client.send({
 				from: 'mock@email.com',
 				to: 'mock@email.com',
-				template: 'test.hbs'
+				template: 'test.hbs',
+				cc: 'test@mail.com',
+				bcc: ['test@mail.com']
 			});
 
 			expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(1, {
 				from: 'mock@email.com',
 				to: 'mock@email.com',
-				html: undefined
+				html: undefined,
+				cc: ['test@mail.com'],
+				bcc: ['test@mail.com']
 			});
 			expect(HbsMock.TemplateSpy).toHaveBeenCalled();
 		});

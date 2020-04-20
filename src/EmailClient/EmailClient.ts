@@ -30,6 +30,8 @@ interface Message {
 	subject?: string;
 	text?: string;
 	attachments?: File[];
+	cc?: string | string[];
+	bcc?: string | string[];
 }
 
 interface HandlebarsConfiguration {
@@ -91,6 +93,9 @@ export default class EmailClient {
 			delete message.attachments;
 		}
 
+		if (message.cc) message.cc = this.transformString2Array(message.cc);
+		if (message.bcc) message.bcc = this.transformString2Array(message.bcc);
+
 		return message;
 	}
 
@@ -115,5 +120,10 @@ export default class EmailClient {
 
 	private isSupportedFileType(file: any): boolean {
 		return file.includes('.hbs') || file.includes('.handlebars') || file.includes('.mjml');
+	}
+
+	private transformString2Array(value: string | string[]): string[] {
+		if (typeof value === 'string') return [value];
+		return value as string[];
 	}
 }
