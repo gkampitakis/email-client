@@ -137,7 +137,7 @@ describe('EmailClient', () => {
 
 			expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(1, {
 				from: 'mock@email.com',
-				to: 'mock@email.com'
+				to: ['mock@email.com']
 			});
 		});
 
@@ -156,7 +156,7 @@ describe('EmailClient', () => {
 
 			expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(1, {
 				from: 'mock@email.com',
-				to: 'mock@email.com',
+				to: ['mock@email.com'],
 				html: undefined,
 				cc: ['test@mail.com'],
 				bcc: ['test@mail.com']
@@ -171,13 +171,13 @@ describe('EmailClient', () => {
 
 			await client.send({
 				from: 'mock@email.com',
-				to: 'mock@email.com',
+				to: ['mock@email.com'],
 				template: 'test.mjml'
 			});
 
 			expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(1, {
 				from: 'mock@email.com',
-				to: 'mock@email.com',
+				to: ['mock@email.com'],
 				html: 'html'
 			});
 			expect(HbsMock.TemplateSpy).toHaveBeenCalled();
@@ -213,7 +213,7 @@ describe('EmailClient', () => {
 			]);
 			expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(1, {
 				from: 'mock@email.com',
-				to: 'mock@email.com',
+				to: ['mock@email.com'],
 				_attachments: [{ name: 'mockFile', path: 'mock/path' }]
 			});
 		});

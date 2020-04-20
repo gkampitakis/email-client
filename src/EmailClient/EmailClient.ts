@@ -23,7 +23,7 @@ interface ExtendableObject {
 
 interface Message {
 	from: string;
-	to: string;
+	to: string | string[];
 	template?: string;
 	data?: object;
 	name?: string;
@@ -95,6 +95,7 @@ export default class EmailClient {
 
 		if (message.cc) message.cc = this.transformString2Array(message.cc);
 		if (message.bcc) message.bcc = this.transformString2Array(message.bcc);
+		message.to = this.transformString2Array(message.to);
 
 		return message;
 	}
