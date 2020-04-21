@@ -86,6 +86,7 @@ export default class EmailClient {
 		if (message.template) {
 			message.html = this.getCompiledHtml(message.template, message.data);
 			delete message.template;
+			delete message.data;
 		}
 
 		if (message.attachments) {
