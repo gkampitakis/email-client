@@ -36,6 +36,21 @@ export default class MailGun extends Transporter {
 	}
 
 	protected messageTransform(message: any): {} {
-		return message;
+		const { _attachments = [], ...rest } = message;
+		let { bcc = [], cc = [], to } = message;
+
+		bcc = bcc.join(',');
+		cc = cc.join(',');
+		to = to.join(',');
+
+		const attachment = _attachments.map((element) => new this.mailGun.Attachment(element));
+
+		return {
+			...rest,
+			...(bcc && { bcc }),
+			...(cc && { cc }),
+			...(_attachments.length && { attachment }),
+			to
+		};
 	}
 }

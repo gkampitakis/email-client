@@ -8,6 +8,11 @@ interface AttachmentFile {
 	content: string;
 }
 
+interface LoadedFiles {
+	data: Buffer;
+	filename: string;
+}
+
 export interface File {
 	name: string;
 	path: string;
@@ -25,6 +30,15 @@ export default class AttachmentFactory {
 				type: result?.mime,
 				filename: file.name,
 				content
+			};
+		});
+	}
+
+	public loadFiles(files: File[]): LoadedFiles[] {
+		return files.map((file) => {
+			return {
+				data: fs.readFileSync(file.path),
+				filename: file.name
 			};
 		});
 	}

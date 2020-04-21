@@ -58,7 +58,11 @@ export default class EmailClient {
 
 	public setTransporter(transporter: Transporter, configuration: any) {
 		if (!Transporters[transporter])
-			throw new Error('Not supported transporter' + transporter + '.\nCurrently you can use [Sendgrid, Mailgun]');
+			throw new Error(
+				'Not supported transporter' +
+					transporter +
+					'.\nCurrently you can use [Sendgrid, Mailgun,AwsSES,Mandrill,Postmark]'
+			);
 		this._transporter = new Transporters[transporter](configuration);
 	}
 
@@ -90,7 +94,10 @@ export default class EmailClient {
 		}
 
 		if (message.attachments) {
-			message._attachments = await this.attachmentFactory.transformFiles(message.attachments);
+			message._attachments =
+				this.getTransporterName() === 'Mailgun'
+					? this.attachmentFactory.loadFiles(message.attachments)
+					: await this.attachmentFactory.transformFiles(message.attachments);
 			delete message.attachments;
 		}
 
@@ -127,5 +134,9 @@ export default class EmailClient {
 	private transformString2Array(value: string | string[]): string[] {
 		if (typeof value === 'string') return [value];
 		return value as string[];
+	}
+
+	private getTransporterName(): string {
+		return this._transporter.get().constructor.name;
 	}
 }
