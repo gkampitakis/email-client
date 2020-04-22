@@ -10,7 +10,8 @@ describe('EmailClient', () => {
 			sendgrid: SendGridMock,
 			mailgun: MailGunMock,
 			postmark: PostmarkMock,
-			mandrill: MandrillMock
+			mandrill: MandrillMock,
+			aws: AwsSESMock
 		} = jest.requireMock('../transporters').Transporters,
 		FsMock = jest.requireMock('fs').Fs,
 		HbsMock = jest.requireMock('handlebars').Hbs,
@@ -30,6 +31,8 @@ describe('EmailClient', () => {
 		PostmarkMock.ConstructorSpy.mockClear();
 		MandrillMock.ConstructorSpy.mockClear();
 		MandrillMock.GetSpy.mockClear();
+		AwsSESMock.GetSpy.mockClear();
+		AwsSESMock.ConstructorSpy.mockClear();
 
 		FsMock.StaticFiles = [];
 	});
@@ -62,13 +65,22 @@ describe('EmailClient', () => {
 			expect(PostmarkMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
 		});
 
-		it('Should instantiate postmark transporter', () => {
+		it('Should instantiate mandrill transporter', () => {
 			new EmailClient({
 				api_key: '',
 				transporter: 'mandrill'
 			});
 
 			expect(MandrillMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
+		});
+
+		it('Should instantiate aws transporter', () => {
+			new EmailClient({
+				api_key: '',
+				transporter: 'aws'
+			});
+
+			expect(AwsSESMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
 		});
 
 		it('Should throw error if not supported transporter', () => {
@@ -112,66 +124,70 @@ describe('EmailClient', () => {
 	});
 
 	describe('Send', () => {
-		it('Should not call getCompiledHtml if no template is provided', () => {
+		it('Should not call getCompiledHtml if no template is provided', async () => {
 			const client = new EmailClient({ api_key: '', transporter: 'sendgrid' });
 
-			client.send({
+			await client.send({
 				from: 'mock@email.com',
 				to: 'mock@email.com'
 			});
 
 			expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(1, {
 				from: 'mock@email.com',
-				to: 'mock@email.com'
+				to: ['mock@email.com']
 			});
 		});
 
-		it('Should call getCompiledHtml if template is provided [handlebars, hbs]', () => {
+		it('Should call getCompiledHtml if template is provided [handlebars, hbs]', async () => {
 			FsMock.StaticFiles = ['test.hbs'];
 
 			const client = new EmailClient({ api_key: '', transporter: 'sendgrid', templateDir: './mockDir' });
 
-			client.send({
+			await client.send({
 				from: 'mock@email.com',
 				to: 'mock@email.com',
-				template: 'test.hbs'
+				template: 'test.hbs',
+				cc: 'test@mail.com',
+				bcc: ['test@mail.com']
 			});
 
 			expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(1, {
 				from: 'mock@email.com',
-				to: 'mock@email.com',
-				html: undefined
+				to: ['mock@email.com'],
+				html: 'html',
+				cc: ['test@mail.com'],
+				bcc: ['test@mail.com']
 			});
 			expect(HbsMock.TemplateSpy).toHaveBeenCalled();
 		});
 
-		it('Should call getCompiledHtml if template is provided [mjml]', () => {
+		it('Should call getCompiledHtml if template is provided [mjml]', async () => {
 			FsMock.StaticFiles = ['test.mjml'];
 
 			const client = new EmailClient({ api_key: '', transporter: 'sendgrid', templateDir: './mockDir' });
 
-			client.send({
+			await client.send({
 				from: 'mock@email.com',
-				to: 'mock@email.com',
+				to: ['mock@email.com'],
 				template: 'test.mjml'
 			});
 
 			expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(1, {
 				from: 'mock@email.com',
-				to: 'mock@email.com',
+				to: ['mock@email.com'],
 				html: 'html'
 			});
 			expect(HbsMock.TemplateSpy).toHaveBeenCalled();
 			expect(MjmlCompileSpy).toHaveBeenCalled();
 		});
 
-		it('Should throw error if the requested template was not present on the directory', () => {
+		it('Should throw error if the requested template was not present on the directory', async () => {
 			const client = new EmailClient({ api_key: '', transporter: 'sendgrid' });
 
 			expect.assertions(1);
 
 			try {
-				client.send({
+				await client.send({
 					from: 'mock@email.com',
 					to: 'mock@email.com',
 					template: 'test'
@@ -199,6 +215,15 @@ describe('EmailClient', () => {
 			});
 
 			expect(MailGunMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
+		});
+
+		it('Should instantiate aws transporter', () => {
+			new EmailClient({
+				api_key: '',
+				transporter: 'aws'
+			});
+
+			expect(AwsSESMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
 		});
 
 		it('Should throw error if not supported transporter', () => {
@@ -259,6 +284,17 @@ describe('EmailClient', () => {
 			client.getTransporter();
 
 			expect(MandrillMock.GetSpy).toHaveBeenCalledTimes(1);
+		});
+
+		it('Should return aws transporter', () => {
+			const client = new EmailClient({
+				api_key: '',
+				transporter: 'aws'
+			});
+
+			client.getTransporter();
+
+			expect(AwsSESMock.GetSpy).toHaveBeenCalledTimes(1);
 		});
 	});
 

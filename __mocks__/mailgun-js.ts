@@ -1,4 +1,4 @@
-export default function (params) {
+export default function test(params) {
 	MailGunSpy(params);
 
 	return {
@@ -9,6 +9,11 @@ export default function (params) {
 					callback(MailGunConfig.error, message);
 				}
 			};
+		},
+		Attachment: class {
+			constructor(param) {
+				return param;
+			}
 		}
 	};
 }

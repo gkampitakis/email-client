@@ -16,7 +16,12 @@
 	},
 	"keywords": [
 		"email",
-		"email-client"
+		"email-client",
+		"sendgrid",
+		"aws-ses",
+		"postmark",
+		"mandrill",
+		"mailgun"
 	],
 	"author": "Georgios Kampitakis",
 	"license": "ISC",
@@ -48,7 +53,10 @@
 		"typescript": "^3.8.3"
 	},
 	"dependencies": {
+		"@gkampitakis/promise-util": "^1.0.0",
 		"@sendgrid/mail": "^7.0.0",
+		"aws-sdk": "^2.658.0",
+		"file-type": "^14.1.4",
 		"handlebars": "^4.7.6",
 		"mailgun-js": "^0.22.0",
 		"mandrill-api": "^1.0.45",
@@ -93,7 +101,7 @@
 		"url": "https://github.com/gkampitakis/email-client.git"
 	},
 	"publishConfig": {
-		"registry": "https://npm.pkg.github.com/"
+		"registry": "https://registry.npmjs.org/"
 	},
 	"commitlint": {
 		"extends": [

@@ -6,7 +6,10 @@ export class Hbs {
 	public static compile(file: any): any {
 		Hbs.CompileSpy(file);
 
-		return Hbs.TemplateSpy;
+		return (param) => {
+			Hbs.TemplateSpy();
+			return 'html';
+		};
 	}
 
 	public static registerHelper(name: string, helperFunc: any): void {

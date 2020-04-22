@@ -82,9 +82,31 @@ class Mandrill {
 	}
 }
 
+class AwsSES {
+	public static SendSpy = jest.fn();
+	public static ConstructorSpy = jest.fn();
+	public static GetSpy = jest.fn();
+
+	public constructor(configuration: any) {
+		AwsSES.ConstructorSpy(configuration);
+	}
+
+	public send(message: any): Promise<any> {
+		AwsSES.SendSpy(message);
+
+		return Promise.resolve(message);
+	}
+
+	public get(): any {
+		AwsSES.GetSpy();
+		return null;
+	}
+}
+
 export const Transporters = {
 	sendgrid: SendGrid,
 	mailgun: MailGun,
 	postmark: PostMark,
-	mandrill: Mandrill
+	mandrill: Mandrill,
+	aws: AwsSES
 };

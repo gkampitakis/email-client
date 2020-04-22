@@ -1,19 +1,21 @@
-import { Transporters } from '../transporters';
 import MailGun from '../transporters/MailGun/MailGun';
 import SendGrid from '../transporters/SendGrid/SendGrid';
+import { Transporters } from '../Transporters';
+import { File } from '../Transporters/Transporter';
 import fs from 'fs';
 import handlebars, { HelperDelegate } from 'handlebars';
 import mjml2html from 'mjml';
-import Mandrill from '../transporters/Mandrill/Mandrill';
-import Postmark from '../transporters/Postmark/Postmark';
+import Mandrill from '../Transporters/Mandrill/Mandrill';
+import Postmark from '../Transporters/Postmark/Postmark';
+import AwsSES from '../Transporters/AwsSES/AwsSES';
 
 interface EmailClientConfiguration extends ExtendableObject {
 	transporter: Transporter;
-	api_key: string;
+	api_key?: string;
 	templateDir?: string;
 }
 
-type Transporter = 'mailgun' | 'sendgrid' | 'postmark' | 'mandrill';
+type Transporter = 'mailgun' | 'sendgrid' | 'postmark' | 'mandrill' | 'aws';
 
 interface ExtendableObject {
 	[key: string]: any;
@@ -21,10 +23,15 @@ interface ExtendableObject {
 
 interface Message {
 	from: string;
-	to: string;
+	to: string | string[];
 	template?: string;
 	data?: object;
 	name?: string;
+	subject?: string;
+	text?: string;
+	attachments?: File[];
+	cc?: string | string[];
+	bcc?: string | string[];
 }
 
 interface HandlebarsConfiguration {
@@ -33,7 +40,8 @@ interface HandlebarsConfiguration {
 }
 
 export default class EmailClient {
-	private static _transporter: MailGun | SendGrid | Mandrill | Postmark;
+	//@ts-ignore
+	private _transporter: MailGun | SendGrid | Mandrill | Postmark | AwsSES;
 	private static templates: Map<string, HandlebarsTemplateDelegate<any>> = new Map();
 	private static handlebars = handlebars;
 
@@ -43,22 +51,22 @@ export default class EmailClient {
 		this.setTemplates(templateDir);
 	}
 
-	public send(message: Message & ExtendableObject): Promise<any> {
-		if (message.template) {
-			message.html = this.getCompiledHtml(message.template, message.data);
-			delete message.template;
-		}
-		return EmailClient._transporter.send(message);
+	public async send(message: Message & ExtendableObject): Promise<any> {
+		return this._transporter.send(await this.constructMessage(message));
 	}
 
 	public setTransporter(transporter: Transporter, configuration: any) {
 		if (!Transporters[transporter])
-			throw new Error('Not supported transporter' + transporter + '.\nCurrently you can use [Sendgrid, Mailgun]');
-		EmailClient._transporter = new Transporters[transporter](configuration);
+			throw new Error(
+				'Not supported transporter' +
+					transporter +
+					'.\nCurrently you can use [Sendgrid, Mailgun,AwsSES,Mandrill,Postmark]'
+			);
+		this._transporter = new Transporters[transporter](configuration);
 	}
 
 	public getTransporter(): any {
-		return EmailClient._transporter.get();
+		return this._transporter.get();
 	}
 
 	public setTemplates(templateDir: string | undefined) {
@@ -77,13 +85,33 @@ export default class EmailClient {
 		if (configure) configure(EmailClient.handlebars);
 	}
 
+	private async constructMessage(message: Message & ExtendableObject): Promise<{}> {
+		// eslint-disable-next-line prefer-const
+		let { template, html, data, cc, bcc, to, ...rest } = message;
+
+		if (template) {
+			html = this.getCompiledHtml(template, data);
+		}
+
+		if (cc) cc = this.transformString2Array(cc);
+		if (bcc) bcc = this.transformString2Array(bcc);
+		to = this.transformString2Array(to);
+
+		return {
+			...(cc && { cc }),
+			...(bcc && { bcc }),
+			...(html && { html }),
+			to,
+			...rest
+		};
+	}
+
 	private getCompiledHtml(templateName: string, data: any) {
 		const template = EmailClient.templates.get(templateName);
 		if (!template)
 			throw new Error(
 				`${templateName} not found on directory.Verify the path and the supported types[*.hbs, *.handlebars, *.mjml]`
 			);
-		//TODO: refactor if more template libraries are supported
 		return templateName.includes('.mjml') ? mjml2html(template(data)).html : template(data);
 	}
 
@@ -99,5 +127,14 @@ export default class EmailClient {
 
 	private isSupportedFileType(file: any): boolean {
 		return file.includes('.hbs') || file.includes('.handlebars') || file.includes('.mjml');
+	}
+
+	private transformString2Array(value: string | string[]): string[] {
+		if (typeof value === 'string') return [value];
+		return value as string[];
+	}
+
+	private getTransporterName(): string {
+		return this._transporter.get().constructor.name;
 	}
 }
