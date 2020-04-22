@@ -154,7 +154,7 @@ describe('EmailClient', () => {
 			expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(1, {
 				from: 'mock@email.com',
 				to: ['mock@email.com'],
-				html: undefined,
+				html: 'html',
 				cc: ['test@mail.com'],
 				bcc: ['test@mail.com']
 			});

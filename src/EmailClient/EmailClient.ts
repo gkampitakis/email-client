@@ -86,17 +86,24 @@ export default class EmailClient {
 	}
 
 	private async constructMessage(message: Message & ExtendableObject): Promise<{}> {
-		if (message.template) {
-			message.html = this.getCompiledHtml(message.template, message.data);
-			delete message.template;
-			delete message.data;
+		// eslint-disable-next-line prefer-const
+		let { template, html, data, cc, bcc, to, ...rest } = message;
+
+		if (template) {
+			html = this.getCompiledHtml(template, data);
 		}
 
-		if (message.cc) message.cc = this.transformString2Array(message.cc);
-		if (message.bcc) message.bcc = this.transformString2Array(message.bcc);
-		message.to = this.transformString2Array(message.to);
+		if (cc) cc = this.transformString2Array(cc);
+		if (bcc) bcc = this.transformString2Array(bcc);
+		to = this.transformString2Array(to);
 
-		return message;
+		return {
+			...(cc && { cc }),
+			...(bcc && { bcc }),
+			...(html && { html }),
+			to,
+			...rest
+		};
 	}
 
 	private getCompiledHtml(templateName: string, data: any) {
