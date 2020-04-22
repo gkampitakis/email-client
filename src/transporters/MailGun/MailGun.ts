@@ -1,5 +1,6 @@
-import { Transporter } from '../Transporter';
+import { File, Transporter } from '../Transporter';
 import mailgun from 'mailgun-js';
+import fs from 'fs';
 
 interface MailgunAuth {
 	api_key: string;
@@ -36,21 +37,27 @@ export default class MailGun extends Transporter {
 	}
 
 	protected messageTransform(message: any): {} {
-		const { _attachments = [], ...rest } = message;
+		const { attachments = [], ...rest } = message;
 		let { bcc = [], cc = [], to } = message;
 
 		bcc = bcc.join(',');
 		cc = cc.join(',');
 		to = to.join(',');
 
-		const attachment = _attachments.map((element) => new this.mailGun.Attachment(element));
+		const attachment = this.processAttachments(attachments);
 
 		return {
 			...rest,
+			to,
 			...(bcc && { bcc }),
 			...(cc && { cc }),
-			...(_attachments.length && { attachment }),
-			to
+			...(attachments.length && { attachment })
 		};
+	}
+
+	protected processAttachments(files: File[]): any {
+		return files.map(
+			(file) => new this.mailGun.Attachment({ data: fs.readFileSync(file.path), filename: file.name })
+		);
 	}
 }

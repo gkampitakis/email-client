@@ -1,5 +1,8 @@
-import { Transporter } from '../Transporter';
+import { File, Transporter } from '../Transporter';
+import { fromFile } from 'file-type';
 import sendgrid from '@sendgrid/mail';
+import PromiseUtil from '@gkampitakis/promise-util';
+import fs from 'fs';
 
 export default class SendGrid extends Transporter {
 	constructor(configuration: any) {
@@ -7,16 +10,16 @@ export default class SendGrid extends Transporter {
 		sendgrid.setApiKey(configuration.api_key);
 	}
 
-	public send(message: any): Promise<any> {
-		return sendgrid.send(this.messageTransform(message) as any);
+	public async send(message: any): Promise<any> {
+		return sendgrid.send((await this.messageTransform(message)) as any);
 	}
 
 	public get(): any {
 		return sendgrid;
 	}
 
-	protected messageTransform(message: any): {} {
-		const { html, text, _attachments, ...data } = message;
+	protected async messageTransform(message: any): Promise<{}> {
+		const { html, text, attachments = [], ...data } = message;
 
 		data.content = [];
 
@@ -32,8 +35,21 @@ export default class SendGrid extends Transporter {
 				value: html
 			});
 
-		if (_attachments) data.attachments = _attachments;
+		if (attachments.length) data.attachments = await this.processAttachments(attachments);
 
 		return data;
+	}
+
+	protected processAttachments(files: File[]): { type: string; filename: string; content: string } {
+		return PromiseUtil.map(files, async (file: File) => {
+			const result = await fromFile(file.path),
+				content = fs.readFileSync(file.path).toString('base64');
+
+			return {
+				type: result?.mime,
+				filename: file.name,
+				content
+			};
+		});
 	}
 }

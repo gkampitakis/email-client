@@ -1,5 +1,8 @@
-import { Transporter } from '../Transporter';
+import { File, Transporter } from '../Transporter';
+import { fromFile } from 'file-type';
 import { ServerClient } from 'postmark';
+import PromiseUtil from '@gkampitakis/promise-util';
+import fs from 'fs';
 
 export default class Postmark extends Transporter {
 	private client;
@@ -8,38 +11,47 @@ export default class Postmark extends Transporter {
 		this.client = new ServerClient(configuration.api_key);
 	}
 
-	public send(message: any): Promise<any> {
-		return this.client.sendEmail(this.messageTransform(message));
+	public async send(message: any): Promise<any> {
+		return this.client.sendEmail(await this.messageTransform(message));
 	}
 
 	public get(): any {
 		return this.client;
 	}
 
-	protected messageTransform(message: any): {} {
-		const { from, to, subject, text, html, _attachments = [], bcc = [], cc = [], ...rest } = message;
-
-		const attachments = _attachments.map((element) => {
-				return {
-					Name: element.filename,
-					Content: element.content,
-					ContentType: element.type
-				};
-			}),
+	protected async messageTransform(message: any): Promise<{}> {
+		const { from, to, subject, text, html, attachments = [], bcc = [], cc = [], ...rest } = message,
 			To = to.join(','),
 			Cc = cc.join(','),
 			Bcc = bcc.join(',');
+
+		let _attachments;
+
+		if (attachments.length) _attachments = await this.processAttachments(attachments);
 
 		return {
 			From: from,
 			To,
 			...(Bcc && { Bcc }),
 			...(Cc && { Cc }),
-			Subject: subject,
-			TextBody: text,
-			HtmlBody: html,
-			...(attachments.length && { attachments }),
+			...(subject && { Subject: subject }),
+			...(text && { TextBody: text }),
+			...(html && { HtmlBody: html }),
+			...(attachments.length && { attachments: _attachments }),
 			...rest
 		};
+	}
+
+	protected processAttachments(files: File[]): { Name: string; Content: string; ContentType: string } {
+		return PromiseUtil.map(files, async (file: File) => {
+			const result = await fromFile(file.path),
+				Content = fs.readFileSync(file.path).toString('base64');
+
+			return {
+				ContentType: result?.mime,
+				Name: file.name,
+				Content
+			};
+		});
 	}
 }

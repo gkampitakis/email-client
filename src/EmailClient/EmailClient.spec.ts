@@ -4,7 +4,6 @@ jest.mock('../transporters');
 jest.mock('fs');
 jest.mock('handlebars');
 jest.mock('mjml');
-jest.mock('../AttachmentFactory/AttachmentFactory');
 
 describe('EmailClient', () => {
 	const {
@@ -16,8 +15,7 @@ describe('EmailClient', () => {
 		} = jest.requireMock('../transporters').Transporters,
 		FsMock = jest.requireMock('fs').Fs,
 		HbsMock = jest.requireMock('handlebars').Hbs,
-		{ MjmlCompileSpy } = jest.requireMock('mjml'),
-		AttachmentFactoryMock = jest.requireMock('../AttachmentFactory/AttachmentFactory').AttachmentFactory;
+		{ MjmlCompileSpy } = jest.requireMock('mjml');
 
 	beforeEach(() => {
 		MailGunMock.SendSpy.mockClear();
@@ -35,7 +33,6 @@ describe('EmailClient', () => {
 		MandrillMock.GetSpy.mockClear();
 		AwsSESMock.GetSpy.mockClear();
 		AwsSESMock.ConstructorSpy.mockClear();
-		AttachmentFactoryMock.TransformFilesSpy.mockClear();
 
 		FsMock.StaticFiles = [];
 	});
@@ -198,24 +195,6 @@ describe('EmailClient', () => {
 			} catch (error) {
 				expect(error).not.toBeUndefined();
 			}
-		});
-
-		it('Should call attachmentFactory if attachments provided', async () => {
-			const client = new EmailClient({ api_key: '', transporter: 'sendgrid' });
-			await client.send({
-				from: 'mock@email.com',
-				to: 'mock@email.com',
-				attachments: [{ name: 'mockFile', path: 'mock/path' }]
-			});
-
-			expect(AttachmentFactoryMock.TransformFilesSpy).toHaveBeenNthCalledWith(1, [
-				{ name: 'mockFile', path: 'mock/path' }
-			]);
-			expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(1, {
-				from: 'mock@email.com',
-				to: ['mock@email.com'],
-				_attachments: [{ name: 'mockFile', path: 'mock/path' }]
-			});
 		});
 	});
 

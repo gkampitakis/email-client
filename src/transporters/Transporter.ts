@@ -1,3 +1,8 @@
+export interface File {
+	name: string;
+	path: string;
+}
+
 export abstract class Transporter {
 	protected configuration: any;
 
@@ -10,4 +15,6 @@ export abstract class Transporter {
 	public abstract get(): any;
 
 	protected abstract messageTransform(message: any): {};
+
+	protected abstract processAttachments(files: any): {};
 }

@@ -1,5 +1,8 @@
-import { Transporter } from '../Transporter';
+import { File, Transporter } from '../Transporter';
+import { fromFile } from 'file-type';
 import mandrill from 'mandrill-api/mandrill';
+import PromiseUtil from '@gkampitakis/promise-util';
+import fs from 'fs';
 
 export default class Mandrill extends Transporter {
 	private client;
@@ -11,8 +14,9 @@ export default class Mandrill extends Transporter {
 
 	public send(message: any): Promise<any> {
 		return new Promise(async (resolve, reject) => {
+			const msg = await this.messageTransform(message);
 			await this.client.messages.send(
-				{ message: this.messageTransform(message), async: true },
+				{ message: msg, async: true },
 				(res) => resolve(res),
 				(err) => reject(err)
 			);
@@ -23,8 +27,8 @@ export default class Mandrill extends Transporter {
 		return this.client;
 	}
 
-	protected messageTransform(message: any): {} {
-		const { from, name, cc = [], bcc = [], to: _to, _attachments = [], ...rest } = message,
+	protected async messageTransform(message: any): Promise<{}> {
+		const { from, name, replyTo, cc = [], bcc = [], to: _to, attachments = [], ...rest } = message,
 			to: { email: string; type: 'to' | 'cc' | 'bcc' }[] = [];
 
 		to.push({
@@ -46,15 +50,32 @@ export default class Mandrill extends Transporter {
 			});
 		});
 
+		const _att = await this.processAttachments(attachments);
+
 		return {
 			from_email: message.from,
-			from_name: message.name,
-			headers: {
-				'Reply-To': message.replyTo
-			},
+			...(name && { from_name: name }),
+			...(replyTo && {
+				headers: {
+					'Reply-To': replyTo
+				}
+			}),
 			to,
-			...(_attachments.length && { attachments: _attachments }),
+			...(attachments.length && { attachments: _att }),
 			...rest
 		};
+	}
+
+	protected processAttachments(files: File[]): { type: string; filename: string; content: string } {
+		return PromiseUtil.map(files, async (file: File) => {
+			const result = await fromFile(file.path),
+				content = fs.readFileSync(file.path).toString('base64');
+
+			return {
+				type: result?.mime,
+				filename: file.name,
+				content
+			};
+		});
 	}
 }

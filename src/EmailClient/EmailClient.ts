@@ -1,7 +1,7 @@
-import AttachmentFactory, { File } from '../AttachmentFactory/AttachmentFactory';
 import MailGun from '../transporters/MailGun/MailGun';
 import SendGrid from '../transporters/SendGrid/SendGrid';
 import { Transporters } from '../Transporters';
+import { File } from '../Transporters/Transporter';
 import fs from 'fs';
 import handlebars, { HelperDelegate } from 'handlebars';
 import mjml2html from 'mjml';
@@ -44,7 +44,6 @@ export default class EmailClient {
 	private _transporter: MailGun | SendGrid | Mandrill | Postmark | AwsSES;
 	private static templates: Map<string, HandlebarsTemplateDelegate<any>> = new Map();
 	private static handlebars = handlebars;
-	private attachmentFactory = new AttachmentFactory();
 
 	constructor(configuration: EmailClientConfiguration) {
 		const { transporter, templateDir, ...rest } = configuration;
@@ -91,14 +90,6 @@ export default class EmailClient {
 			message.html = this.getCompiledHtml(message.template, message.data);
 			delete message.template;
 			delete message.data;
-		}
-
-		if (message.attachments) {
-			message._attachments =
-				this.getTransporterName() === 'Mailgun'
-					? this.attachmentFactory.loadFiles(message.attachments)
-					: await this.attachmentFactory.transformFiles(message.attachments);
-			delete message.attachments;
 		}
 
 		if (message.cc) message.cc = this.transformString2Array(message.cc);
