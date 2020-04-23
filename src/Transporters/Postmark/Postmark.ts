@@ -25,9 +25,7 @@ export default class Postmark extends Transporter {
 			Cc = cc.join(','),
 			Bcc = bcc.join(',');
 
-		let _attachments;
-
-		if (attachments.length) _attachments = await this.processAttachments(attachments);
+		const _attachments = await this.processAttachments(attachments);
 
 		return {
 			From: from,

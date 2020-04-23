@@ -1,5 +1,5 @@
-import MailGun from '../transporters/MailGun/MailGun';
-import SendGrid from '../transporters/SendGrid/SendGrid';
+import MailGun from '../Transporters/MailGun/MailGun';
+import SendGrid from '../Transporters/SendGrid/SendGrid';
 import { Transporters } from '../Transporters';
 import { File } from '../Transporters/Transporter';
 import fs from 'fs';
@@ -132,9 +132,5 @@ export default class EmailClient {
 	private transformString2Array(value: string | string[]): string[] {
 		if (typeof value === 'string') return [value];
 		return value as string[];
-	}
-
-	private getTransporterName(): string {
-		return this._transporter.get().constructor.name;
 	}
 }

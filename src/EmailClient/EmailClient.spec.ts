@@ -1,6 +1,6 @@
 import EmailClient from './EmailClient';
 
-jest.mock('../transporters');
+jest.mock('../Transporters');
 jest.mock('fs');
 jest.mock('handlebars');
 jest.mock('mjml');
@@ -12,7 +12,7 @@ describe('EmailClient', () => {
 			postmark: PostmarkMock,
 			mandrill: MandrillMock,
 			aws: AwsSESMock
-		} = jest.requireMock('../transporters').Transporters,
+		} = jest.requireMock('../Transporters').Transporters,
 		FsMock = jest.requireMock('fs').Fs,
 		HbsMock = jest.requireMock('handlebars').Hbs,
 		{ MjmlCompileSpy } = jest.requireMock('mjml');

@@ -74,9 +74,11 @@ client.send({
 -   any other transporter specific field
 -   attachments
     ```json
-    {
-    ,
-    "
+    [
+    	{
+    		"name": "myfilte.txt",
+    		"path": __dirname + "/path/to/file"
+    	}
     ]
     ```
 
