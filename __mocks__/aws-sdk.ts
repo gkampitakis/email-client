@@ -1,6 +1,6 @@
 const CredentialsSpy = jest.fn(),
 	SESSpy = jest.fn(),
-	SendEmailSpy = jest.fn(),
+	SendRawEmailSpy = jest.fn(),
 	ConfigUpdateSpy = jest.fn();
 
 class Credentials {
@@ -14,8 +14,8 @@ class SES {
 		SESSpy();
 	}
 
-	public sendEmail(message) {
-		SendEmailSpy(message);
+	public sendRawEmail(message) {
+		SendRawEmailSpy(message);
 		return {
 			promise: () => Promise.resolve(message)
 		};
@@ -28,4 +28,4 @@ const config = {
 	}
 };
 
-export { SES, Credentials, config, CredentialsSpy, SESSpy, SendEmailSpy, ConfigUpdateSpy };
+export { SES, Credentials, config, CredentialsSpy, SESSpy, SendRawEmailSpy, ConfigUpdateSpy };
