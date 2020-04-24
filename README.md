@@ -2,9 +2,11 @@
 
 [![Codecov Coverage](https://img.shields.io/codecov/c/github/gkampitakis/email-client)](https://codecov.io/gh/gkampitakis/email-client) [![Build Status](https://travis-ci.org/gkampitakis/email-client.svg?branch=master)](https://travis-ci.org/gkampitakis/email-client)
 
-A library written in typescript. using various clients in order to send emails from your nodejs server. Supports the send of html template as well.
-
 A library written in typescript using known email clients for sending emails. It has built in support for compiling templates and sending html in the email.
+
+## Changelog
+
+[CHANGELOG.md](./CHANGELOG.md)
 
 ## Usage
 
@@ -113,6 +115,7 @@ client.setTemplates('/path/to/new/templates');
 -   [postmark](https://www.npmjs.com/package/postmark)
 -   [aws-sdk](https://www.npmjs.com/package/aws-sdk)
 -   [mjml](https://www.npmjs.com/package/mjml)
+-   [nodemailer](https://www.npmjs.com/package/nodemailer)
 -   [handlebars](https://www.npmjs.com/package/handlebars)
 -   [promise-util](https://www.npmjs.com/package/@gkampitakis/promise-util)
 -   [file-type](https://www.npmjs.com/package/file-type)
