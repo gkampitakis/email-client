@@ -1,3 +1,10 @@
+## [1.1.1](https://github.com/gkampitakis/email-client/compare/v1.1.0...v1.1.1) (2020-05-01)
+
+
+### Bug Fixes
+
+* **deps:** update broken dependency of internal module ([4c7f1bc](https://github.com/gkampitakis/email-client/commit/4c7f1bcbb1021ab85c2d8af1596baa01c8881f29))
+
 # 1.0.0 (2020-04-24)
 
 
