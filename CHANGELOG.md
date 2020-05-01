@@ -1,3 +1,10 @@
+## [1.1.2](https://github.com/gkampitakis/email-client/compare/v1.1.1...v1.1.2) (2020-05-01)
+
+
+### Bug Fixes
+
+* broken types ([1a4f198](https://github.com/gkampitakis/email-client/commit/1a4f1987bb3f36179414d952867ebb68fa8c7fcf))
+
 ## [1.1.1](https://github.com/gkampitakis/email-client/compare/v1.1.0...v1.1.1) (2020-05-01)
 
 

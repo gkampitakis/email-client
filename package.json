@@ -1,6 +1,6 @@
 {
 	"name": "@gkampitakis/email-client",
-	"version": "1.1.1",
+	"version": "1.1.2",
 	"description": "A module implementing an email client",
 	"main": "lib/index.js",
 	"types": "lib/index.d.ts",
