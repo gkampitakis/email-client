@@ -40,7 +40,7 @@ export default class Postmark extends Transporter {
 		};
 	}
 
-	protected processAttachments(files: File[]): { Name: string; Content: string; ContentType: string } {
+	protected processAttachments(files: File[]): Promise<{ Name: string; Content: string; ContentType: string }> {
 		return PromiseUtil.map(files, async (file: File) => {
 			const result = await fromFile(file.path),
 				Content = fs.readFileSync(file.path).toString('base64');

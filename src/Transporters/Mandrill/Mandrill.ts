@@ -66,7 +66,7 @@ export default class Mandrill extends Transporter {
 		};
 	}
 
-	protected processAttachments(files: File[]): { type: string; filename: string; content: string } {
+	protected processAttachments(files: File[]): Promise<{ type: string; filename: string; content: string }> {
 		return PromiseUtil.map(files, async (file: File) => {
 			const result = await fromFile(file.path),
 				content = fs.readFileSync(file.path).toString('base64');
