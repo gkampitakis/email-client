@@ -34,7 +34,7 @@
 		"@semantic-release/npm": "^7.0.5",
 		"@semantic-release/release-notes-generator": "^9.0.1",
 		"@types/jest": "^25.2.1",
-		"@types/node": "^13.11.0",
+		"@types/node": "^14.0.6",
 		"@types/nodemailer": "^6.4.0",
 		"@types/postmark": "^2.0.3",
 		"@typescript-eslint/eslint-plugin": "^2.27.0",
