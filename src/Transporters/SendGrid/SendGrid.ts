@@ -18,7 +18,7 @@ export default class SendGrid extends Transporter {
 		return sendgrid;
 	}
 
-	protected async messageTransform(message: any): Promise<{}> {
+	protected async messageTransform(message: any): Promise<Record<string, any>> {
 		const { html, text, attachments = [], ...data } = message;
 
 		data.content = [];

@@ -19,7 +19,7 @@ export default class Postmark extends Transporter {
 		return this.client;
 	}
 
-	protected async messageTransform(message: any): Promise<{}> {
+	protected async messageTransform(message: any): Promise<Record<string, any>> {
 		const { from, to, subject, text, html, attachments = [], bcc = [], cc = [], ...rest } = message,
 			To = to.join(','),
 			Cc = cc.join(','),

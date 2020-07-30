@@ -31,7 +31,7 @@ export default class AwsSES extends Transporter {
 		this.client = new SES();
 	}
 
-	protected async messageTransform(message: any): Promise<{}> {
+	protected async messageTransform(message: any): Promise<Record<string, any>> {
 		const { from, to, subject, html, text, cc = [], bcc = [], replyTo, attachments = [], ...rest } = message;
 
 		const _attachments = await this.processAttachments(attachments);

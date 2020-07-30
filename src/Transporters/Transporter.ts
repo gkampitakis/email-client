@@ -14,7 +14,7 @@ export abstract class Transporter {
 
 	public abstract get(): any;
 
-	protected abstract messageTransform(message: any): {};
+	protected abstract messageTransform(message: any): Record<string, any>;
 
-	protected abstract processAttachments(files: any): {};
+	protected abstract processAttachments(files: any): Record<string, any>;
 }

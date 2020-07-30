@@ -27,7 +27,7 @@ export default class Mandrill extends Transporter {
 		return this.client;
 	}
 
-	protected async messageTransform(message: any): Promise<{}> {
+	protected async messageTransform(message: any): Promise<Record<string, any>> {
 		const { from, name, replyTo, cc = [], bcc = [], to: _to, attachments = [], ...rest } = message,
 			to: { email: string; type: 'to' | 'cc' | 'bcc' }[] = [];
 

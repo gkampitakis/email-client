@@ -25,7 +25,7 @@ interface Message {
 	from: string;
 	to: string | string[];
 	template?: string;
-	data?: object;
+	data?: Record<string, any>;
 	name?: string;
 	subject?: string;
 	text?: string;
@@ -85,7 +85,7 @@ export default class EmailClient {
 		if (configure) configure(EmailClient.handlebars);
 	}
 
-	private async constructMessage(message: Message & ExtendableObject): Promise<{}> {
+	private async constructMessage(message: Message & ExtendableObject): Promise<Record<string, any>> {
 		// eslint-disable-next-line prefer-const
 		let { template, html, data, cc, bcc, to, ...rest } = message;
 

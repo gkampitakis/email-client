@@ -36,7 +36,7 @@ export default class MailGun extends Transporter {
 		});
 	}
 
-	protected messageTransform(message: any): {} {
+	protected messageTransform(message: any): Record<string, any> {
 		const { attachments = [], bcc = [], cc = [], to, ...rest } = message;
 
 		const attachment = this.processAttachments(attachments);
