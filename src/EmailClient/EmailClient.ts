@@ -5,7 +5,6 @@ import { File } from '../Transporters/Transporter';
 import fs from 'fs';
 import handlebars, { HelperDelegate } from 'handlebars';
 import mjml2html from 'mjml';
-import Mandrill from '../Transporters/Mandrill/Mandrill';
 import Postmark from '../Transporters/Postmark/Postmark';
 import AwsSES from '../Transporters/AwsSES/AwsSES';
 
@@ -15,7 +14,7 @@ interface EmailClientConfiguration extends ExtendableObject {
 	templateDir?: string;
 }
 
-type Transporter = 'mailgun' | 'sendgrid' | 'postmark' | 'mandrill' | 'aws';
+type Transporter = 'mailgun' | 'sendgrid' | 'postmark' | 'aws';
 
 interface ExtendableObject {
 	[key: string]: any;
@@ -41,7 +40,7 @@ interface HandlebarsConfiguration {
 
 export default class EmailClient {
 	//@ts-ignore
-	private _transporter: MailGun | SendGrid | Mandrill | Postmark | AwsSES;
+	private _transporter: MailGun | SendGrid | Postmark | AwsSES;
 	private static templates: Map<string, HandlebarsTemplateDelegate<any>> = new Map();
 	private static handlebars = handlebars;
 
@@ -60,7 +59,7 @@ export default class EmailClient {
 			throw new Error(
 				'Not supported transporter' +
 					transporter +
-					'.\nCurrently you can use [Sendgrid, Mailgun,AwsSES,Mandrill,Postmark]'
+					'.\nCurrently you can use [Sendgrid, Mailgun,AwsSES,Postmark]'
 			);
 		this._transporter = new Transporters[transporter](configuration);
 	}

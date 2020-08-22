@@ -6,13 +6,9 @@ jest.mock('handlebars');
 jest.mock('mjml');
 
 describe('EmailClient', () => {
-	const {
-			sendgrid: SendGridMock,
-			mailgun: MailGunMock,
-			postmark: PostmarkMock,
-			mandrill: MandrillMock,
-			aws: AwsSESMock
-		} = jest.requireMock('../Transporters').Transporters,
+	const { sendgrid: SendGridMock, mailgun: MailGunMock, postmark: PostmarkMock, aws: AwsSESMock } = jest.requireMock(
+			'../Transporters'
+		).Transporters,
 		FsMock = jest.requireMock('fs').Fs,
 		HbsMock = jest.requireMock('handlebars').Hbs,
 		{ MjmlCompileSpy } = jest.requireMock('mjml');
@@ -29,8 +25,6 @@ describe('EmailClient', () => {
 		HbsMock.TemplateSpy.mockClear();
 		MjmlCompileSpy.mockClear();
 		PostmarkMock.ConstructorSpy.mockClear();
-		MandrillMock.ConstructorSpy.mockClear();
-		MandrillMock.GetSpy.mockClear();
 		AwsSESMock.GetSpy.mockClear();
 		AwsSESMock.ConstructorSpy.mockClear();
 
@@ -63,15 +57,6 @@ describe('EmailClient', () => {
 			});
 
 			expect(PostmarkMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
-		});
-
-		it('Should instantiate mandrill transporter', () => {
-			new EmailClient({
-				api_key: '',
-				transporter: 'mandrill'
-			});
-
-			expect(MandrillMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { api_key: '' });
 		});
 
 		it('Should instantiate aws transporter', () => {
@@ -273,17 +258,6 @@ describe('EmailClient', () => {
 			client.getTransporter();
 
 			expect(PostmarkMock.GetSpy).toHaveBeenCalledTimes(1);
-		});
-
-		it('Should return mandrill transporter', () => {
-			const client = new EmailClient({
-				api_key: '',
-				transporter: 'mandrill'
-			});
-
-			client.getTransporter();
-
-			expect(MandrillMock.GetSpy).toHaveBeenCalledTimes(1);
 		});
 
 		it('Should return aws transporter', () => {
