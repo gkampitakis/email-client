@@ -1,6 +1,6 @@
 # Email Client
 
-[![Codecov Coverage](https://img.shields.io/codecov/c/github/gkampitakis/email-client)](https://codecov.io/gh/gkampitakis/email-client) [![Build Status](https://travis-ci.org/gkampitakis/email-client.svg?branch=master)](https://travis-ci.org/gkampitakis/email-client)
+[![Build Status](https://travis-ci.org/gkampitakis/email-client.svg?branch=master)](https://travis-ci.org/gkampitakis/email-client)
 [![semantic-release](https://img.shields.io/badge/%20%20%F0%9F%93%A6%F0%9F%9A%80-semantic--release-e10079.svg)](https://github.com/semantic-release/semantic-release)
 
 A library written in typescript using known email clients for sending emails. It has built in support for compiling templates and sending html in the email.
@@ -17,7 +17,7 @@ A library written in typescript using known email clients for sending emails. It
 import { EmailClient } from '@gkampitakis/email-client';
 
 const client = new EmailClient({
-	transporter: 'sendgrid', // Supported 'sendgrid', 'mailgun', 'postmark', 'mandrill' ,'aws'
+	transporter: 'sendgrid', // Supported 'sendgrid', 'mailgun', 'postmark', 'aws'
 	apik_key: '', //Your api key depending on each client provider
 	templateDir: __dirname + '/path/to/your/email/templates'
 	//... any other provider specific configuration
@@ -31,9 +31,9 @@ const client = new EmailClient({
 
 ```json
 {
-	"api_key":<apiKey>,
-	"secret":<secret>,
-	"region:"<region>
+	"api_key": "*******",
+	"secret": "*******",
+	"region:": "eu-west-2"
 }
 ```
 
@@ -43,10 +43,10 @@ const client = new EmailClient({
 <details><summary> Mailgun Config</summary>
 <p>
 
-```json
+```js
 {
-	"api_key":<apiKey>,
-	"domain":<domain>
+	"api_key": "*******",
+	"domain": "/mock/domain"
 }
 ```
 
@@ -76,13 +76,13 @@ client.send({
 -   subject `string`
 -   any other transporter specific field
 -   attachments
-    ```json
+    ```js
     [
     	{
-    		"name": "myfilte.txt",
-    		"path": __dirname + "/path/to/file"
+    		name: 'myfilte.txt',
+    		path: __dirname + '/path/to/file'
     	}
-    ]
+    ];
     ```
 
 ### Email Client Methods
@@ -108,19 +108,6 @@ client.setTemplates('/path/to/new/templates');
 
 ```
 
-## Dependencies
-
--   [@sendgrid.mail](https://www.npmjs.com/package/@sendgrid/mail)
--   [mailgun-js](https://www.npmjs.com/package/mailgun-js)
--   [mandrill-api](https://www.npmjs.com/package/mandrill-api)
--   [postmark](https://www.npmjs.com/package/postmark)
--   [aws-sdk](https://www.npmjs.com/package/aws-sdk)
--   [mjml](https://www.npmjs.com/package/mjml)
--   [nodemailer](https://www.npmjs.com/package/nodemailer)
--   [handlebars](https://www.npmjs.com/package/handlebars)
--   [promise-util](https://www.npmjs.com/package/@gkampitakis/promise-util)
--   [file-type](https://www.npmjs.com/package/file-type)
-
 ## Suporrted Templates
 
 -   mjml
@@ -130,7 +117,6 @@ client.setTemplates('/path/to/new/templates');
 
 -   mailgun
 -   postmark
--   mandrill **This transporter is not yet properly tested!!**
 -   sendgrid
 -   AwsSES
 

@@ -61,27 +61,6 @@ class MailGun {
 	}
 }
 
-class Mandrill {
-	public static SendSpy = jest.fn();
-	public static ConstructorSpy = jest.fn();
-	public static GetSpy = jest.fn();
-
-	public constructor(configuration: any) {
-		Mandrill.ConstructorSpy(configuration);
-	}
-
-	public send(message: any): Promise<any> {
-		Mandrill.SendSpy(message);
-
-		return Promise.resolve(message);
-	}
-
-	public get(): any {
-		Mandrill.GetSpy();
-		return null;
-	}
-}
-
 class AwsSES {
 	public static SendSpy = jest.fn();
 	public static ConstructorSpy = jest.fn();
@@ -107,6 +86,5 @@ export const Transporters = {
 	sendgrid: SendGrid,
 	mailgun: MailGun,
 	postmark: PostMark,
-	mandrill: Mandrill,
 	aws: AwsSES
 };
