@@ -25,10 +25,18 @@ describe('AwsSES', () => {
 	});
 
 	it('Should initialize AwsSES', () => {
-		new AwsSES({ api_key: 'mockKey', secret: 'mockKey', region: 'mockRegion' });
+		new AwsSES({ accessKeyId: 'mockKey', secretAccessKey: 'mockKey', region: 'mockRegion' });
 
 		expect(CredentialsSpy).toHaveBeenNthCalledWith(1, { accessKeyId: 'mockKey', secretAccessKey: 'mockKey' });
 		expect(ConfigUpdateSpy).toHaveBeenCalledTimes(1);
+		expect(SESSpy).toHaveBeenCalledTimes(1);
+	});
+
+	it('Should initialize AwsSES without credentials', () => {
+		new AwsSES({});
+
+		expect(CredentialsSpy).not.toHaveBeenCalled();
+		expect(ConfigUpdateSpy).not.toHaveBeenCalled();
 		expect(SESSpy).toHaveBeenCalledTimes(1);
 	});
 

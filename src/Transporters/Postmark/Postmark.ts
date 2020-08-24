@@ -3,12 +3,14 @@ import { fromFile } from 'file-type';
 import { ServerClient } from 'postmark';
 import PromiseUtil from '@gkampitakis/promise-util';
 import fs from 'fs';
+import { ClientOptions } from 'postmark/dist/client/models';
 
 export default class Postmark extends Transporter {
 	private client;
-	constructor(configuration: any) {
+	constructor(configuration: { serverToken: string; configOptions?: ClientOptions.Configuration }) {
 		super(configuration);
-		this.client = new ServerClient(configuration.api_key);
+		const { serverToken, configOptions } = configuration;
+		this.client = new ServerClient(serverToken, configOptions);
 	}
 
 	public async send(message: any): Promise<any> {

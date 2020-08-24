@@ -258,10 +258,14 @@ describe('EmailClient', () => {
 		it('Should instantiate postmark transporter', () => {
 			new EmailClient({
 				serverToken: 'mockToken',
+				configOptions: { mock: 'data' } as any,
 				transporter: 'postmark'
 			});
 
-			expect(PostmarkMock.ConstructorSpy).toHaveBeenNthCalledWith(1, { serverToken: 'mockToken' });
+			expect(PostmarkMock.ConstructorSpy).toHaveBeenNthCalledWith(1, {
+				serverToken: 'mockToken',
+				configOptions: { mock: 'data' }
+			});
 		});
 
 		it('Should instantiate mailgun transporter', () => {

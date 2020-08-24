@@ -19,7 +19,7 @@ describe('Postmark', () => {
 	});
 
 	it('Should call the send message', async () => {
-		const transporter = new Postmark({ api_key: 'mockApiKey' });
+		const transporter = new Postmark({ serverToken: 'mockApiKey', configOptions: { mock: 'data' } as any });
 
 		await transporter.send({
 			from: 'george',
@@ -36,12 +36,12 @@ describe('Postmark', () => {
 			TextBody: 'test',
 			Subject: 'test'
 		});
-		expect(PostmarkMock.ClientSpy).toHaveBeenNthCalledWith(1, 'mockApiKey');
+		expect(PostmarkMock.ClientSpy).toHaveBeenNthCalledWith(1, 'mockApiKey', { mock: 'data' });
 		expect(FsMock.ReadFileSyncSpy).toHaveBeenCalledTimes(0);
 	});
 
 	it('Should include attachments if present', async () => {
-		const transporter = new Postmark({ api_key: 'mockApiKey' });
+		const transporter = new Postmark({ serverToken: 'mockApiKey', configOptions: { mock: 'data' } as any });
 
 		await transporter.send({
 			from: 'george',
@@ -67,7 +67,7 @@ describe('Postmark', () => {
 	it('Should return undefined type if no result is returned in attachments', async () => {
 		SRC.result = false;
 
-		const transporter = new Postmark({ api_key: 'mockApiKey' });
+		const transporter = new Postmark({ serverToken: 'mockApiKey', configOptions: { mock: 'data' } as any });
 
 		await transporter.send({
 			from: 'george',
@@ -98,7 +98,7 @@ describe('Postmark', () => {
 	});
 
 	it('Should include bcc/cc if present in correct format', async () => {
-		const transporter = new Postmark({ api_key: 'mockApiKey' });
+		const transporter = new Postmark({ serverToken: 'mockApiKey', configOptions: { mock: 'data' } as any });
 
 		await transporter.send({
 			from: 'george',
@@ -122,7 +122,7 @@ describe('Postmark', () => {
 	});
 
 	it('Should not include not existent fields on the message', async () => {
-		const transporter = new Postmark({ api_key: 'mockApiKey' });
+		const transporter = new Postmark({ serverToken: 'mockApiKey', configOptions: { mock: 'data' } as any });
 
 		await transporter.send({
 			from: 'george',
@@ -136,7 +136,7 @@ describe('Postmark', () => {
 	});
 
 	it('Should return postmark', () => {
-		const transporter = new Postmark({ api_key: 'mockApiKey' });
+		const transporter = new Postmark({ serverToken: 'mockApiKey', configOptions: { mock: 'data' } as any });
 
 		expect(transporter.get()).toBeInstanceOf(PostmarkMock);
 	});
