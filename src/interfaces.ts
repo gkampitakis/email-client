@@ -1,5 +1,6 @@
 import { ClientOptions } from 'postmark/dist/client/models';
 import { HelperDelegate } from 'handlebars';
+import { AttFile } from './Transporters/Transporter';
 
 export type TemplateLanguage = 'handlebars' | 'mjml' | 'ejs';
 
@@ -43,7 +44,7 @@ export interface Message {
 	name?: string;
 	subject?: string;
 	text?: string;
-	attachments?: File[];
+	attachments?: (AttFile | string)[];
 	cc?: string | string[];
 	bcc?: string | string[];
 	[key: string]: any;

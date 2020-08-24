@@ -1,8 +1,6 @@
-import { File, Transporter } from '../Transporter';
-import { fromFile } from 'file-type';
+import { Transporter } from '../Transporter';
 import { ServerClient } from 'postmark';
 import PromiseUtil from '@gkampitakis/promise-util';
-import fs from 'fs';
 import { ClientOptions } from 'postmark/dist/client/models';
 
 export default class Postmark extends Transporter {
@@ -42,15 +40,14 @@ export default class Postmark extends Transporter {
 		};
 	}
 
-	protected processAttachments(files: File[]): Promise<{ Name: string; Content: string; ContentType: string }> {
-		return PromiseUtil.map(files, async (file: File) => {
-			const result = await fromFile(file.path),
-				Content = fs.readFileSync(file.path).toString('base64');
+	protected processAttachments(files: any): Promise<{ Name: string; Content: string; ContentType: string }> {
+		return PromiseUtil.map(files, async (file: any) => {
+			const { content, filename, contentType } = await this.getFileData(file);
 
 			return {
-				ContentType: result?.mime,
-				Name: file.name,
-				Content
+				ContentType: contentType,
+				Name: filename,
+				Content: content.toString('base64')
 			};
 		});
 	}

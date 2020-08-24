@@ -1,9 +1,7 @@
-import { File, Transporter } from '../Transporter';
-import { fromFile } from 'file-type';
+import { Transporter } from '../Transporter';
 import { Credentials, SES, config } from 'aws-sdk';
 import MailComposer from 'nodemailer/lib/mail-composer';
 import PromiseUtil from '@gkampitakis/promise-util';
-import fs from 'fs';
 
 export default class AwsSES extends Transporter {
 	private client: SES;
@@ -59,16 +57,15 @@ export default class AwsSES extends Transporter {
 		});
 	}
 
-	protected processAttachments(files: File[]): Promise<{ type: string; filename: string; content: string }> {
-		return PromiseUtil.map(files, async (file: File) => {
-			const result = await fromFile(file.path),
-				content = fs.readFileSync(file.path).toString('base64');
+	protected processAttachments(files: any): Promise<{ type: string; filename: string; content: string }> {
+		return PromiseUtil.map(files, async (file: any) => {
+			const { content, contentType, filename } = await this.getFileData(file);
 
 			return {
-				contentType: result?.mime,
-				filename: file.name,
+				contentType,
+				filename,
 				encoding: 'base64',
-				content
+				content: content.toString('base64')
 			};
 		});
 	}

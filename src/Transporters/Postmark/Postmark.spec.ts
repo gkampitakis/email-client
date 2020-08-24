@@ -97,6 +97,32 @@ describe('Postmark', () => {
 		expect(FsMock.ReadFileSyncSpy).toHaveBeenCalledTimes(2);
 	});
 
+	it('Should handle mixed attachments structure', async () => {
+		const transporter = new Postmark({ serverToken: 'mockApiKey' });
+
+		await transporter.send({
+			from: 'george',
+			to: ['george', 'john'],
+			html: '<div>Test</div>',
+			text: 'test',
+			subject: 'test',
+			attachments: [{ name: 'mockAttachments', path: 'mock/path' }, 'mock2/path2', '/mock3/path3.txt']
+		});
+
+		expect(PostmarkMock.SendSpy).toHaveBeenNthCalledWith(1, {
+			From: 'george',
+			To: 'george,john',
+			HtmlBody: '<div>Test</div>',
+			TextBody: 'test',
+			Subject: 'test',
+			attachments: [
+				{ ContentType: 'image/png', Name: 'mockAttachments', Content: 'mock/path' },
+				{ ContentType: 'image/png', Name: 'path2', Content: 'mock2/path2' },
+				{ ContentType: 'image/png', Name: 'path3.txt', Content: '/mock3/path3.txt' }
+			]
+		});
+	});
+
 	it('Should include bcc/cc if present in correct format', async () => {
 		const transporter = new Postmark({ serverToken: 'mockApiKey', configOptions: { mock: 'data' } as any });
 
