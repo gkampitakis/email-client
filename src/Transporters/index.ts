@@ -7,5 +7,5 @@ export const Transporters = {
 	sendgrid: SendGrid,
 	mailgun: MailGun,
 	postmark: Postmark,
-	aws: AwsSES
+	SES: AwsSES
 };

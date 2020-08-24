@@ -86,5 +86,5 @@ export const Transporters = {
 	sendgrid: SendGrid,
 	mailgun: MailGun,
 	postmark: PostMark,
-	aws: AwsSES
+	SES: AwsSES
 };
