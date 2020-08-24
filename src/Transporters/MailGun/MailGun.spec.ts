@@ -66,6 +66,34 @@ describe('MailGun', () => {
 		expect(FsMock.ReadFileSyncSpy).toHaveBeenNthCalledWith(1, 'mock/path');
 	});
 
+	it('Should handle mixed attachments structure', async () => {
+		const transporter = new MailGun({ apiKey: 'mockApiKey', domain: 'mockDomain' });
+
+		await transporter.send({
+			from: 'george',
+			to: ['george'],
+			bcc: ['george', 'john'],
+			cc: ['george', 'john'],
+			html: '<div>Test</div>',
+			text: 'test',
+			attachments: [{ name: 'mockAttachments', path: 'mock/path' }, 'mock2/path2', '/mock3/path3.txt']
+		});
+
+		expect(MailGunSendSpy).toHaveBeenNthCalledWith(1, {
+			from: 'george',
+			to: 'george',
+			html: '<div>Test</div>',
+			text: 'test',
+			bcc: 'george,john',
+			cc: 'george,john',
+			attachment: [
+				{ filename: 'mockAttachments', data: 'mock/path' },
+				{ filename: 'path2', data: 'mock2/path2' },
+				{ filename: 'path3.txt', data: '/mock3/path3.txt' }
+			]
+		});
+	});
+
 	it('Should reject with error', async () => {
 		MailGunConfig.error = new Error('MockError');
 

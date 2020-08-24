@@ -98,6 +98,44 @@ describe('AwsSES', () => {
 		});
 	});
 
+	it('Should handle mixed attachments structure', async () => {
+		const transporter = new AwsSES({});
+
+		await transporter.send({
+			html: '<div>Test</div>',
+			subject: 'testSubject',
+			from: 'me@gmail.com',
+			to: ['mock@mail.com'],
+			cc: ['mock@mail.com', 'mock@mail.com'],
+			bcc: ['mock@mail.com', 'mock@mail.com'],
+			text: 'text',
+			replyTo: 'mock@mail.com',
+			attachments: [
+				{ name: 'mockAttachments', path: 'mock/path' },
+				{ path: 'mock/path' },
+				'mock2/path2',
+				'/mock3/path3.txt'
+			]
+		});
+
+		expect(MailComposerMock.ConstructorSpy).toHaveBeenNthCalledWith(1, {
+			html: '<div>Test</div>',
+			subject: 'testSubject',
+			from: 'me@gmail.com',
+			to: 'mock@mail.com',
+			bcc: 'mock@mail.com,mock@mail.com',
+			cc: 'mock@mail.com,mock@mail.com',
+			text: 'text',
+			replyTo: 'mock@mail.com',
+			attachments: [
+				{ encoding: 'base64', filename: 'mockAttachments', content: 'mock/path', contentType: 'image/png' },
+				{ encoding: 'base64', filename: 'path', content: 'mock/path', contentType: 'image/png' },
+				{ encoding: 'base64', filename: 'path2', content: 'mock2/path2', contentType: 'image/png' },
+				{ encoding: 'base64', filename: 'path3.txt', content: '/mock3/path3.txt', contentType: 'image/png' }
+			]
+		});
+	});
+
 	it('Should return undefined type if no result is returned in attachments', async () => {
 		SRC.result = false;
 

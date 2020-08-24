@@ -115,6 +115,38 @@ describe('SendGrid', () => {
 		expect(FsMock.ReadFileSyncSpy).toHaveBeenCalledTimes(2);
 	});
 
+	it('Should handle mixed attachments structure', async () => {
+		const transporter = new SendGrid({ apiKey: 'mockApiKey' });
+
+		await transporter.send({
+			from: 'george',
+			to: 'george',
+			html: '<div>Test</div>',
+			text: 'test',
+			attachments: [{ name: 'mockAttachments', path: 'mock/path' }, 'mock2/path2', '/mock3/path3.txt']
+		});
+
+		expect(SendEmailSpy).toHaveBeenNthCalledWith(1, {
+			from: 'george',
+			to: 'george',
+			content: [
+				{
+					type: 'text/plain',
+					value: 'test'
+				},
+				{
+					type: 'text/html',
+					value: '<div>Test</div>'
+				}
+			],
+			attachments: [
+				{ type: 'image/png', filename: 'mockAttachments', content: 'mock/path' },
+				{ type: 'image/png', filename: 'path2', content: 'mock2/path2' },
+				{ type: 'image/png', filename: 'path3.txt', content: '/mock3/path3.txt' }
+			]
+		});
+	});
+
 	it('Should not include html in message body', async () => {
 		const transporter = new SendGrid({ apiKey: 'mockApiKey' });
 
