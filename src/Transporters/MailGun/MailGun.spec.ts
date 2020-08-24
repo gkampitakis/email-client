@@ -16,13 +16,13 @@ describe('MailGun', () => {
 	});
 
 	it('Should initialize mailgun', () => {
-		new MailGun({ api_key: 'mockKey', domain: 'mockDomain' });
+		new MailGun({ apiKey: 'mockKey', domain: 'mockDomain' });
 
 		expect(MailGunSpy).toHaveBeenNthCalledWith(1, { apiKey: 'mockKey', domain: 'mockDomain' });
 	});
 
 	it('Should call the send message', async () => {
-		const transporter = new MailGun({ api_key: 'mockKey', domain: 'mockDomain' }),
+		const transporter = new MailGun({ apiKey: 'mockKey', domain: 'mockDomain' }),
 			message = {
 				from: 'george',
 				to: ['george']
@@ -42,7 +42,7 @@ describe('MailGun', () => {
 	});
 
 	it('Should include attachments if present', async () => {
-		const transporter = new MailGun({ api_key: 'mockApiKey', domain: 'mockDomain' });
+		const transporter = new MailGun({ apiKey: 'mockApiKey', domain: 'mockDomain' });
 
 		await transporter.send({
 			from: 'george',
@@ -69,7 +69,7 @@ describe('MailGun', () => {
 	it('Should reject with error', async () => {
 		MailGunConfig.error = new Error('MockError');
 
-		const transporter = new MailGun({ api_key: 'mockKey', domain: 'mockDomain' }),
+		const transporter = new MailGun({ apiKey: 'mockKey', domain: 'mockDomain' }),
 			message = {
 				from: 'george',
 				to: ['george'],
@@ -81,7 +81,7 @@ describe('MailGun', () => {
 	});
 
 	it('Should return mailgun', () => {
-		const transporter = new MailGun({ api_key: 'mockKey', domain: 'mockDomain' });
+		const transporter = new MailGun({ apiKey: 'mockKey', domain: 'mockDomain' });
 
 		expect(transporter.get().messages).toBeInstanceOf(Function);
 	});

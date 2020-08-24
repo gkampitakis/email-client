@@ -2,17 +2,18 @@ import { File, Transporter } from '../Transporter';
 import mailgun from 'mailgun-js';
 import fs from 'fs';
 
-interface MailgunAuth {
-	api_key: string;
-	domain: string;
-}
-
 export default class MailGun extends Transporter {
 	private mailGun: any;
 
-	constructor(configuration: any) {
+	constructor(configuration: { apiKey: string; domain: string }) {
 		super(configuration);
-		this.setupMailgun(configuration);
+
+		const { apiKey, domain } = configuration;
+
+		this.mailGun = mailgun({
+			apiKey,
+			domain
+		});
 	}
 
 	public send(message: any): Promise<any> {
@@ -27,13 +28,6 @@ export default class MailGun extends Transporter {
 
 	public get(): any {
 		return this.mailGun;
-	}
-
-	private setupMailgun(auth: Partial<MailgunAuth>) {
-		this.mailGun = mailgun({
-			apiKey: auth.api_key,
-			domain: auth.domain
-		});
 	}
 
 	protected messageTransform(message: any): Record<string, any> {

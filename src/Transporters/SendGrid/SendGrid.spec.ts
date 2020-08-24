@@ -19,7 +19,7 @@ describe('SendGrid', () => {
 	});
 
 	it('Should call the send message', async () => {
-		const transporter = new SendGrid({ api_key: 'mockApiKey' });
+		const transporter = new SendGrid({ apiKey: 'mockApiKey' });
 
 		await transporter.send({
 			from: 'george',
@@ -47,7 +47,7 @@ describe('SendGrid', () => {
 	});
 
 	it('Should include attachments if present', async () => {
-		const transporter = new SendGrid({ api_key: 'mockApiKey' });
+		const transporter = new SendGrid({ apiKey: 'mockApiKey' });
 
 		await transporter.send({
 			from: 'george',
@@ -79,7 +79,7 @@ describe('SendGrid', () => {
 	it('Should return undefined type if no result is returned in attachments', async () => {
 		SRC.result = false;
 
-		const transporter = new SendGrid({ api_key: 'mockApiKey' });
+		const transporter = new SendGrid({ apiKey: 'mockApiKey' });
 
 		await transporter.send({
 			from: 'george',
@@ -116,7 +116,7 @@ describe('SendGrid', () => {
 	});
 
 	it('Should not include html in message body', async () => {
-		const transporter = new SendGrid({ api_key: 'mockApiKey' });
+		const transporter = new SendGrid({ apiKey: 'mockApiKey' });
 
 		await transporter.send({
 			from: 'george',
@@ -137,7 +137,7 @@ describe('SendGrid', () => {
 	});
 
 	it('Should not include text in message body', async () => {
-		const transporter = new SendGrid({ api_key: 'mockApiKey' });
+		const transporter = new SendGrid({ apiKey: 'mockApiKey' });
 
 		await transporter.send({
 			from: 'george',
@@ -158,7 +158,7 @@ describe('SendGrid', () => {
 	});
 
 	it('Should return sendgrid', () => {
-		const transporter = new SendGrid({ api_key: 'mockApiKey' });
+		const transporter = new SendGrid({ apiKey: 'mockApiKey' });
 
 		expect(transporter.get()).toEqual({
 			send: expect.any(Function),

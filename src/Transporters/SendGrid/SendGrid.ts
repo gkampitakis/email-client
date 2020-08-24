@@ -5,9 +5,9 @@ import PromiseUtil from '@gkampitakis/promise-util';
 import fs from 'fs';
 
 export default class SendGrid extends Transporter {
-	constructor(configuration: any) {
+	constructor(configuration: { apiKey: string }) {
 		super(configuration);
-		sendgrid.setApiKey(configuration.api_key);
+		sendgrid.setApiKey(configuration.apiKey);
 	}
 
 	public async send(message: any): Promise<any> {

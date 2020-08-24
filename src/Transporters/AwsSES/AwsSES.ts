@@ -6,29 +6,30 @@ import PromiseUtil from '@gkampitakis/promise-util';
 import fs from 'fs';
 
 export default class AwsSES extends Transporter {
-	private client: SES | undefined;
+	private client: SES;
+
 	constructor(configuration: any) {
 		super(configuration);
-		this.setupAwsSES(configuration);
+
+		const { accessKeyId, secretAccessKey, region } = configuration;
+
+		if (accessKeyId && secretAccessKey && region) {
+			const credentials = new Credentials({ accessKeyId, secretAccessKey });
+
+			config.update({ credentials, region });
+		}
+
+		this.client = new SES();
 	}
 
 	public async send(message: any): Promise<any> {
-		const Data = await this.messageTransform(message);
+		const data = await this.messageTransform(message);
 
-		return this.client!.sendRawEmail({ RawMessage: { Data } }).promise();
+		return this.client.sendRawEmail({ RawMessage: { Data: data } }).promise();
 	}
 
 	public get(): any {
 		return this.client;
-	}
-
-	private setupAwsSES(configuration: any) {
-		const { api_key: accessKeyId, secret: secretAccessKey, region } = configuration,
-			//@ts-ignore
-			credentials = new Credentials({ accessKeyId, secretAccessKey });
-
-		config.update({ credentials, region });
-		this.client = new SES();
 	}
 
 	protected async messageTransform(message: any): Promise<Record<string, any>> {
