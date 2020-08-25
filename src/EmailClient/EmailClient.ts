@@ -61,7 +61,7 @@ export default class EmailClient {
 		// eslint-disable-next-line prefer-const
 		let { template = '', html = '', data = {}, cc, bcc, to, ...rest } = message;
 
-		if (template && templateLng) html = this.getCompiledHTML(template, data, templateLng);
+		if (template && templateLng && !html) html = this.getCompiledHTML(template, data, templateLng);
 
 		if (cc) cc = this.transformString2Array(cc);
 		if (bcc) bcc = this.transformString2Array(bcc);

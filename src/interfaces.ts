@@ -37,6 +37,7 @@ export interface MailgunConfiguration {
 }
 
 export interface Message {
+	html?: string;
 	from: string;
 	to: string | string[];
 	template?: string;

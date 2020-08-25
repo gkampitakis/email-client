@@ -120,6 +120,24 @@ describe('EmailClient', () => {
 	});
 
 	describe('Send', () => {
+		it('Should ignore template if html attribute is provided', async () => {
+			const client = new EmailClient({ apiKey: 'mockKey', transporter: 'sendgrid', templateLanguage: 'ejs' });
+
+			await client.send({
+				from: 'mock@email.com',
+				to: 'mock@email.com',
+				html: '<div>Hello World</div>',
+				template: '/path/two/template'
+			});
+
+			expect(FsMock.ReaddirSyncSpy).not.toHaveBeenCalled();
+			expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(1, {
+				from: 'mock@email.com',
+				to: ['mock@email.com'],
+				html: '<div>Hello World</div>'
+			});
+		});
+
 		it('Should not call getCompiledHtml if no template is provided', async () => {
 			const client = new EmailClient({ apiKey: 'mockKey', transporter: 'sendgrid', templateLanguage: 'ejs' });
 
