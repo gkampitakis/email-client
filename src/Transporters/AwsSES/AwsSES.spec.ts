@@ -2,12 +2,12 @@ import AwsSES from './AwsSES';
 
 jest.mock('aws-sdk');
 jest.mock('fs');
-jest.mock('file-type');
+jest.mock('mime-types');
 jest.mock('nodemailer/lib/mail-composer');
 
 describe('AwsSES', () => {
 	const { CredentialsSpy, SESSpy, SendRawEmailSpy, ConfigUpdateSpy, SES: SESMock } = jest.requireMock('aws-sdk'),
-		{ FromFileSpy, SRC } = jest.requireMock('file-type'),
+		{ LookupSpy, SRC } = jest.requireMock('mime-types'),
 		FsMock = jest.requireMock('fs').Fs,
 		MailComposerMock = jest.requireMock('nodemailer/lib/mail-composer').MailComposer;
 
@@ -16,7 +16,7 @@ describe('AwsSES', () => {
 		SESSpy.mockClear();
 		SendRawEmailSpy.mockClear();
 		ConfigUpdateSpy.mockClear();
-		FromFileSpy.mockClear();
+		LookupSpy.mockClear();
 		FsMock.ReadFileSyncSpy.mockClear();
 		MailComposerMock.ConstructorSpy.mockClear();
 
@@ -82,7 +82,7 @@ describe('AwsSES', () => {
 			RawMessage: { Data: 'mockMessage' }
 		});
 		expect(FsMock.ReadFileSyncSpy).toHaveBeenNthCalledWith(1, 'mock/path');
-		expect(FromFileSpy).toHaveBeenNthCalledWith(1, 'mock/path');
+		expect(LookupSpy).toHaveBeenNthCalledWith(1, 'mock/path');
 		expect(MailComposerMock.ConstructorSpy).toHaveBeenNthCalledWith(1, {
 			html: '<div>Test</div>',
 			subject: 'testSubject',
@@ -136,7 +136,7 @@ describe('AwsSES', () => {
 		});
 	});
 
-	it('Should return undefined type if no result is returned in attachments', async () => {
+	it('Should not return type if no result is returned in attachments', async () => {
 		SRC.result = false;
 
 		const transporter = new AwsSES({ accessKeyId: 'mockKey', secretAccessKey: 'mockKey', region: 'mockRegion' });
@@ -152,7 +152,7 @@ describe('AwsSES', () => {
 			]
 		});
 
-		expect(FromFileSpy).toHaveBeenCalledTimes(2);
+		expect(LookupSpy).toHaveBeenCalledTimes(2);
 		expect(FsMock.ReadFileSyncSpy).toHaveBeenCalledTimes(2);
 		expect(SendRawEmailSpy).toHaveBeenNthCalledWith(1, {
 			RawMessage: { Data: 'mockMessage' }
@@ -163,8 +163,8 @@ describe('AwsSES', () => {
 			from: 'me@gmail.com',
 			to: 'mock@mail.com',
 			attachments: [
-				{ encoding: 'base64', filename: 'mockAttachments', content: 'mock/path', contentType: undefined },
-				{ encoding: 'base64', filename: 'mockAttachments', content: 'mock/path2', contentType: undefined }
+				{ encoding: 'base64', filename: 'mockAttachments', content: 'mock/path', contentType: '' },
+				{ encoding: 'base64', filename: 'mockAttachments', content: 'mock/path2', contentType: '' }
 			]
 		});
 	});

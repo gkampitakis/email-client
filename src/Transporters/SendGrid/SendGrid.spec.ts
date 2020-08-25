@@ -2,17 +2,17 @@ import SendGrid from './SendGrid';
 
 jest.mock('@sendgrid/mail');
 jest.mock('fs');
-jest.mock('file-type');
+jest.mock('mime-types');
 
 describe('SendGrid', () => {
 	const { SendEmailSpy, SetApiKeySpy } = jest.requireMock('@sendgrid/mail'),
-		{ FromFileSpy, SRC } = jest.requireMock('file-type'),
+		{ LookupSpy, SRC } = jest.requireMock('mime-types'),
 		FsMock = jest.requireMock('fs').Fs;
 
 	beforeEach(() => {
 		SendEmailSpy.mockClear();
 		SetApiKeySpy.mockClear();
-		FromFileSpy.mockClear();
+		LookupSpy.mockClear();
 		FsMock.ReadFileSyncSpy.mockClear();
 
 		SRC.result = true;
@@ -73,10 +73,10 @@ describe('SendGrid', () => {
 			attachments: [{ type: 'image/png', filename: 'mockAttachments', content: 'mock/path' }]
 		});
 		expect(FsMock.ReadFileSyncSpy).toHaveBeenNthCalledWith(1, 'mock/path');
-		expect(FromFileSpy).toHaveBeenNthCalledWith(1, 'mock/path');
+		expect(LookupSpy).toHaveBeenNthCalledWith(1, 'mock/path');
 	});
 
-	it('Should return undefined type if no result is returned in attachments', async () => {
+	it('Should not return type if no result is returned in attachments', async () => {
 		SRC.result = false;
 
 		const transporter = new SendGrid({ apiKey: 'mockApiKey' });
@@ -106,12 +106,12 @@ describe('SendGrid', () => {
 				}
 			],
 			attachments: [
-				{ type: undefined, filename: 'mockAttachments', content: 'mock/path' },
-				{ type: undefined, filename: 'mockAttachments', content: 'mock/path2' }
+				{ type: '', filename: 'mockAttachments', content: 'mock/path' },
+				{ type: '', filename: 'mockAttachments', content: 'mock/path2' }
 			]
 		});
 
-		expect(FromFileSpy).toHaveBeenCalledTimes(2);
+		expect(LookupSpy).toHaveBeenCalledTimes(2);
 		expect(FsMock.ReadFileSyncSpy).toHaveBeenCalledTimes(2);
 	});
 

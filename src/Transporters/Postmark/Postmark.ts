@@ -1,6 +1,5 @@
 import { Transporter } from '../Transporter';
 import { ServerClient } from 'postmark';
-import PromiseUtil from '@gkampitakis/promise-util';
 import { ClientOptions } from 'postmark/dist/client/models';
 
 export default class Postmark extends Transporter {
@@ -12,20 +11,20 @@ export default class Postmark extends Transporter {
 	}
 
 	public async send(message: any): Promise<any> {
-		return this.client.sendEmail(await this.messageTransform(message));
+		return this.client.sendEmail(this.messageTransform(message));
 	}
 
 	public get(): any {
 		return this.client;
 	}
 
-	protected async messageTransform(message: any): Promise<Record<string, any>> {
+	protected messageTransform(message: any): Promise<Record<string, any>> {
 		const { from, to, subject, text, html, attachments = [], bcc = [], cc = [], ...rest } = message,
 			To = to.join(','),
 			Cc = cc.join(','),
 			Bcc = bcc.join(',');
 
-		const _attachments = await this.processAttachments(attachments);
+		const _attachments = this.processAttachments(attachments);
 
 		return {
 			From: from,
@@ -40,9 +39,9 @@ export default class Postmark extends Transporter {
 		};
 	}
 
-	protected processAttachments(files: any): Promise<{ Name: string; Content: string; ContentType: string }> {
-		return PromiseUtil.map(files, async (file: any) => {
-			const { content, filename, contentType } = await this.getFileData(file);
+	protected processAttachments(files: any): { Name: string; Content: string; ContentType: string } {
+		return files.map((file: any) => {
+			const { content, filename, contentType } = this.getFileData(file);
 
 			return {
 				ContentType: contentType,
