@@ -1,6 +1,5 @@
 import { Transporter } from '../Transporter';
 import mailgun from 'mailgun-js';
-import PromiseUtil from '@gkampitakis/promise-util';
 
 export default class MailGun extends Transporter {
 	private mailGun: any;
@@ -18,7 +17,7 @@ export default class MailGun extends Transporter {
 
 	public send(message: any): Promise<any> {
 		return new Promise(async (resolve, reject) => {
-			this.mailGun.messages().send(await this.messageTransform(message), (err: Error, body: any) => {
+			this.mailGun.messages().send(this.messageTransform(message), (err: Error, body: any) => {
 				if (err) return reject(err);
 
 				resolve(body);
@@ -30,10 +29,10 @@ export default class MailGun extends Transporter {
 		return this.mailGun;
 	}
 
-	protected async messageTransform(message: any): Promise<Record<string, any>> {
+	protected messageTransform(message: any): Record<string, any> {
 		const { attachments = [], bcc = [], cc = [], to, ...rest } = message;
 
-		const attachment = await this.processAttachments(attachments);
+		const attachment = this.processAttachments(attachments);
 
 		return {
 			to: to.join(','),
@@ -45,8 +44,8 @@ export default class MailGun extends Transporter {
 	}
 
 	protected processAttachments(files: any): any {
-		return PromiseUtil.map(files, async (file: any) => {
-			const { content, filename } = await this.getFileData(file);
+		return files.map((file: any) => {
+			const { content, filename } = this.getFileData(file);
 
 			return new this.mailGun.Attachment({ data: content, filename });
 		});

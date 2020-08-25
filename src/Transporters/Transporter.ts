@@ -1,6 +1,6 @@
 import path from 'path';
 import fs from 'fs';
-import { fromFile } from 'file-type';
+import mimeTypes from 'mime-types';
 
 /**
  * Attachment File
@@ -27,7 +27,7 @@ export abstract class Transporter {
 
 	protected abstract processAttachments(files: any): Record<string, any>;
 
-	protected async getFileData(file: any): Promise<{ content: Buffer; filename: string; contentType: any }> {
+	protected getFileData(file: any): { content: Buffer; filename: string; contentType: string } {
 		let filepath = file.path;
 		let filename = file.name;
 
@@ -37,12 +37,12 @@ export abstract class Transporter {
 			filename = parsePath.name + parsePath.ext;
 		}
 
-		const result = await fromFile(filepath);
+		const result = mimeTypes.lookup(filepath);
 
 		return {
 			filename,
 			content: fs.readFileSync(filepath),
-			contentType: result?.mime
+			contentType: result || ''
 		};
 	}
 }

@@ -1,6 +1,5 @@
 import { Transporter } from '../Transporter';
 import sendgrid from '@sendgrid/mail';
-import PromiseUtil from '@gkampitakis/promise-util';
 
 export default class SendGrid extends Transporter {
 	constructor(configuration: { apiKey: string }) {
@@ -9,14 +8,14 @@ export default class SendGrid extends Transporter {
 	}
 
 	public async send(message: any): Promise<any> {
-		return sendgrid.send((await this.messageTransform(message)) as any);
+		return sendgrid.send(this.messageTransform(message) as any);
 	}
 
 	public get(): any {
 		return sendgrid;
 	}
 
-	protected async messageTransform(message: any): Promise<Record<string, any>> {
+	protected messageTransform(message: any): Record<string, any> {
 		const { html, text, attachments = [], ...data } = message;
 
 		data.content = [];
@@ -33,14 +32,14 @@ export default class SendGrid extends Transporter {
 				value: html
 			});
 
-		if (attachments.length) data.attachments = await this.processAttachments(attachments);
+		if (attachments.length) data.attachments = this.processAttachments(attachments);
 
 		return data;
 	}
 
-	protected processAttachments(files: any): Promise<{ type: string; filename: string; content: string }> {
-		return PromiseUtil.map(files, async (file: any) => {
-			const { content, contentType, filename } = await this.getFileData(file);
+	protected processAttachments(files: any): { type: string; filename: string; content: string } {
+		return files.map((file: any) => {
+			const { content, contentType, filename } = this.getFileData(file);
 
 			return {
 				type: contentType,

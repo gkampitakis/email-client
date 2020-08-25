@@ -1,7 +1,6 @@
 import { Transporter } from '../Transporter';
 import { Credentials, SES, config } from 'aws-sdk';
 import MailComposer from 'nodemailer/lib/mail-composer';
-import PromiseUtil from '@gkampitakis/promise-util';
 
 export default class AwsSES extends Transporter {
 	private client: SES;
@@ -33,7 +32,7 @@ export default class AwsSES extends Transporter {
 	protected async messageTransform(message: any): Promise<Record<string, any>> {
 		const { from, to, subject, html, text, cc = [], bcc = [], replyTo, attachments = [], ...rest } = message;
 
-		const _attachments = await this.processAttachments(attachments);
+		const _attachments = this.processAttachments(attachments);
 
 		const msg = new MailComposer({
 			...(cc.length && { cc: cc.join(',') }),
@@ -57,9 +56,9 @@ export default class AwsSES extends Transporter {
 		});
 	}
 
-	protected processAttachments(files: any): Promise<{ type: string; filename: string; content: string }> {
-		return PromiseUtil.map(files, async (file: any) => {
-			const { content, contentType, filename } = await this.getFileData(file);
+	protected processAttachments(files: any): { type: string; filename: string; content: string } {
+		return files.map((file: any) => {
+			const { content, contentType, filename } = this.getFileData(file);
 
 			return {
 				contentType,

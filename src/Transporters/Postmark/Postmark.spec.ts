@@ -2,17 +2,17 @@ import Postmark from './Postmark';
 
 jest.mock('postmark');
 jest.mock('fs');
-jest.mock('file-type');
+jest.mock('mime-types');
 
 describe('Postmark', () => {
 	const PostmarkMock = jest.requireMock('postmark').ServerClient,
-		{ FromFileSpy, SRC } = jest.requireMock('file-type'),
+		{ LookupSpy, SRC } = jest.requireMock('mime-types'),
 		FsMock = jest.requireMock('fs').Fs;
 
 	beforeEach(() => {
 		PostmarkMock.ClientSpy.mockClear();
 		PostmarkMock.SendSpy.mockClear();
-		FromFileSpy.mockClear();
+		LookupSpy.mockClear();
 		FsMock.ReadFileSyncSpy.mockClear();
 
 		SRC.result = true;
@@ -61,10 +61,10 @@ describe('Postmark', () => {
 			attachments: [{ ContentType: 'image/png', Name: 'mockAttachments', Content: 'mock/path' }]
 		});
 		expect(FsMock.ReadFileSyncSpy).toHaveBeenNthCalledWith(1, 'mock/path');
-		expect(FromFileSpy).toHaveBeenNthCalledWith(1, 'mock/path');
+		expect(LookupSpy).toHaveBeenNthCalledWith(1, 'mock/path');
 	});
 
-	it('Should return undefined type if no result is returned in attachments', async () => {
+	it('Should not return type if no result is returned in attachments', async () => {
 		SRC.result = false;
 
 		const transporter = new Postmark({ serverToken: 'mockApiKey', configOptions: { mock: 'data' } as any });
@@ -88,12 +88,12 @@ describe('Postmark', () => {
 			TextBody: 'test',
 			Subject: 'test',
 			attachments: [
-				{ ContentType: undefined, Name: 'mockAttachments', Content: 'mock/path' },
-				{ ContentType: undefined, Name: 'mockAttachments', Content: 'mock/path2' }
+				{ ContentType: '', Name: 'mockAttachments', Content: 'mock/path' },
+				{ ContentType: '', Name: 'mockAttachments', Content: 'mock/path2' }
 			]
 		});
 
-		expect(FromFileSpy).toHaveBeenCalledTimes(2);
+		expect(LookupSpy).toHaveBeenCalledTimes(2);
 		expect(FsMock.ReadFileSyncSpy).toHaveBeenCalledTimes(2);
 	});
 
