@@ -4,113 +4,113 @@ jest.mock('mailgun-js');
 jest.mock('fs');
 
 describe('MailGun', () => {
-	const { MailGunSpy, MailGunSendSpy, MailGunConfig } = jest.requireMock('mailgun-js'),
-		FsMock = jest.requireMock('fs').Fs;
+  const { MailGunSpy, MailGunSendSpy, MailGunConfig } = jest.requireMock('mailgun-js'),
+    FsMock = jest.requireMock('fs').Fs;
 
-	beforeEach(() => {
-		MailGunSpy.mockClear();
-		MailGunSendSpy.mockClear();
-		FsMock.ReadFileSyncSpy.mockClear();
+  beforeEach(() => {
+    MailGunSpy.mockClear();
+    MailGunSendSpy.mockClear();
+    FsMock.ReadFileSyncSpy.mockClear();
 
-		MailGunConfig.error = null;
-	});
+    MailGunConfig.error = null;
+  });
 
-	it('Should initialize mailgun', () => {
-		new MailGun({ apiKey: 'mockKey', domain: 'mockDomain' });
+  it('Should initialize mailgun', () => {
+    new MailGun({ apiKey: 'mockKey', domain: 'mockDomain' });
 
-		expect(MailGunSpy).toHaveBeenNthCalledWith(1, { apiKey: 'mockKey', domain: 'mockDomain' });
-	});
+    expect(MailGunSpy).toHaveBeenNthCalledWith(1, { apiKey: 'mockKey', domain: 'mockDomain' });
+  });
 
-	it('Should call the send message', async () => {
-		const transporter = new MailGun({ apiKey: 'mockKey', domain: 'mockDomain' }),
-			message = {
-				from: 'george',
-				to: ['george']
-			};
+  it('Should call the send message', async () => {
+    const transporter = new MailGun({ apiKey: 'mockKey', domain: 'mockDomain' }),
+      message = {
+        from: 'george',
+        to: ['george']
+      };
 
-		const res = await transporter.send(message);
+    const res = await transporter.send(message);
 
-		expect(res).toEqual({
-			from: 'george',
-			to: 'george'
-		});
-		expect(MailGunSendSpy).toHaveBeenNthCalledWith(1, {
-			from: 'george',
-			to: 'george'
-		});
-		expect(MailGunSpy).toHaveBeenNthCalledWith(1, { apiKey: 'mockKey', domain: 'mockDomain' });
-	});
+    expect(res).toEqual({
+      from: 'george',
+      to: 'george'
+    });
+    expect(MailGunSendSpy).toHaveBeenNthCalledWith(1, {
+      from: 'george',
+      to: 'george'
+    });
+    expect(MailGunSpy).toHaveBeenNthCalledWith(1, { apiKey: 'mockKey', domain: 'mockDomain' });
+  });
 
-	it('Should include attachments if present', async () => {
-		const transporter = new MailGun({ apiKey: 'mockApiKey', domain: 'mockDomain' });
+  it('Should include attachments if present', async () => {
+    const transporter = new MailGun({ apiKey: 'mockApiKey', domain: 'mockDomain' });
 
-		await transporter.send({
-			from: 'george',
-			to: ['george'],
-			bcc: ['george', 'john'],
-			cc: ['george', 'john'],
-			html: '<div>Test</div>',
-			text: 'test',
-			attachments: [{ name: 'mockAttachments', path: 'mock/path' }]
-		});
+    await transporter.send({
+      from: 'george',
+      to: ['george'],
+      bcc: ['george', 'john'],
+      cc: ['george', 'john'],
+      html: '<div>Test</div>',
+      text: 'test',
+      attachments: [{ name: 'mockAttachments', path: 'mock/path' }]
+    });
 
-		expect(MailGunSendSpy).toHaveBeenNthCalledWith(1, {
-			from: 'george',
-			to: 'george',
-			html: '<div>Test</div>',
-			text: 'test',
-			bcc: 'george,john',
-			cc: 'george,john',
-			attachment: [{ filename: 'mockAttachments', data: 'mock/path' }]
-		});
-		expect(FsMock.ReadFileSyncSpy).toHaveBeenNthCalledWith(1, 'mock/path');
-	});
+    expect(MailGunSendSpy).toHaveBeenNthCalledWith(1, {
+      from: 'george',
+      to: 'george',
+      html: '<div>Test</div>',
+      text: 'test',
+      bcc: 'george,john',
+      cc: 'george,john',
+      attachment: [{ filename: 'mockAttachments', data: 'mock/path' }]
+    });
+    expect(FsMock.ReadFileSyncSpy).toHaveBeenNthCalledWith(1, 'mock/path');
+  });
 
-	it('Should handle mixed attachments structure', async () => {
-		const transporter = new MailGun({ apiKey: 'mockApiKey', domain: 'mockDomain' });
+  it('Should handle mixed attachments structure', async () => {
+    const transporter = new MailGun({ apiKey: 'mockApiKey', domain: 'mockDomain' });
 
-		await transporter.send({
-			from: 'george',
-			to: ['george'],
-			bcc: ['george', 'john'],
-			cc: ['george', 'john'],
-			html: '<div>Test</div>',
-			text: 'test',
-			attachments: [{ name: 'mockAttachments', path: 'mock/path' }, 'mock2/path2', '/mock3/path3.txt']
-		});
+    await transporter.send({
+      from: 'george',
+      to: ['george'],
+      bcc: ['george', 'john'],
+      cc: ['george', 'john'],
+      html: '<div>Test</div>',
+      text: 'test',
+      attachments: [{ name: 'mockAttachments', path: 'mock/path' }, 'mock2/path2', '/mock3/path3.txt']
+    });
 
-		expect(MailGunSendSpy).toHaveBeenNthCalledWith(1, {
-			from: 'george',
-			to: 'george',
-			html: '<div>Test</div>',
-			text: 'test',
-			bcc: 'george,john',
-			cc: 'george,john',
-			attachment: [
-				{ filename: 'mockAttachments', data: 'mock/path' },
-				{ filename: 'path2', data: 'mock2/path2' },
-				{ filename: 'path3.txt', data: '/mock3/path3.txt' }
-			]
-		});
-	});
+    expect(MailGunSendSpy).toHaveBeenNthCalledWith(1, {
+      from: 'george',
+      to: 'george',
+      html: '<div>Test</div>',
+      text: 'test',
+      bcc: 'george,john',
+      cc: 'george,john',
+      attachment: [
+        { filename: 'mockAttachments', data: 'mock/path' },
+        { filename: 'path2', data: 'mock2/path2' },
+        { filename: 'path3.txt', data: '/mock3/path3.txt' }
+      ]
+    });
+  });
 
-	it('Should reject with error', async () => {
-		MailGunConfig.error = new Error('MockError');
+  it('Should reject with error', async () => {
+    MailGunConfig.error = new Error('MockError');
 
-		const transporter = new MailGun({ apiKey: 'mockKey', domain: 'mockDomain' }),
-			message = {
-				from: 'george',
-				to: ['george'],
-				html: '<div>Test</div>',
-				text: 'test'
-			};
+    const transporter = new MailGun({ apiKey: 'mockKey', domain: 'mockDomain' }),
+      message = {
+        from: 'george',
+        to: ['george'],
+        html: '<div>Test</div>',
+        text: 'test'
+      };
 
-		expect(transporter.send(message)).rejects.toThrow(Error('MockError'));
-	});
+    expect(transporter.send(message)).rejects.toThrow(Error('MockError'));
+  });
 
-	it('Should return mailgun', () => {
-		const transporter = new MailGun({ apiKey: 'mockKey', domain: 'mockDomain' });
+  it('Should return mailgun', () => {
+    const transporter = new MailGun({ apiKey: 'mockKey', domain: 'mockDomain' });
 
-		expect(transporter.get().messages).toBeInstanceOf(Function);
-	});
+    expect(transporter.get().messages).toBeInstanceOf(Function);
+  });
 });
