@@ -3,69 +3,69 @@ import { Credentials, SES, config } from 'aws-sdk';
 import MailComposer from 'nodemailer/lib/mail-composer';
 
 export default class AwsSES extends Transporter {
-	private client: SES;
+  private client: SES;
 
-	constructor(configuration: any) {
-		super(configuration);
+  constructor (configuration: any) {
+    super(configuration);
 
-		const { accessKeyId, secretAccessKey, region } = configuration;
+    const { accessKeyId, secretAccessKey, region } = configuration;
 
-		if (accessKeyId && secretAccessKey && region) {
-			const credentials = new Credentials({ accessKeyId, secretAccessKey });
+    if (accessKeyId && secretAccessKey && region) {
+      const credentials = new Credentials({ accessKeyId, secretAccessKey });
 
-			config.update({ credentials, region });
-		}
+      config.update({ credentials, region });
+    }
 
-		this.client = new SES();
-	}
+    this.client = new SES();
+  }
 
-	public async send(message: any): Promise<any> {
-		const data = await this.messageTransform(message);
+  public async send (message: any): Promise<any> {
+    const data = await this.messageTransform(message);
 
-		return this.client.sendRawEmail({ RawMessage: { Data: data } }).promise();
-	}
+    return this.client.sendRawEmail({ RawMessage: { Data: data } }).promise();
+  }
 
-	public get(): any {
-		return this.client;
-	}
+  public get (): any {
+    return this.client;
+  }
 
-	protected async messageTransform(message: any): Promise<Record<string, any>> {
-		const { from, to, subject, html, text, cc = [], bcc = [], replyTo, attachments = [], ...rest } = message;
+  protected async messageTransform (message: any): Promise<Record<string, any>> {
+    const { from, to, subject, html, text, cc = [], bcc = [], replyTo, attachments = [], ...rest } = message;
 
-		const _attachments = this.processAttachments(attachments);
+    const _attachments = this.processAttachments(attachments);
 
-		const msg = new MailComposer({
-			...(cc.length && { cc: cc.join(',') }),
-			...(bcc.length && { bcc: bcc.join(',') }),
-			...(to && { to: to.join(',') }),
-			...(subject && { subject }),
-			...(html && { html }),
-			...(text && { text }),
-			...(replyTo && { replyTo }),
-			...(attachments.length && { attachments: _attachments }),
-			from,
-			...rest
-		});
+    const msg = new MailComposer({
+      ...(cc.length && { cc: cc.join(',') }),
+      ...(bcc.length && { bcc: bcc.join(',') }),
+      ...(to && { to: to.join(',') }),
+      ...(subject && { subject }),
+      ...(html && { html }),
+      ...(text && { text }),
+      ...(replyTo && { replyTo }),
+      ...(attachments.length && { attachments: _attachments }),
+      from,
+      ...rest
+    });
 
-		return new Promise((resolve, reject) => {
-			msg.compile().build((err, message) => {
-				if (err) return reject(err);
+    return new Promise((resolve, reject) => {
+      msg.compile().build((err, message) => {
+        if (err) return reject(err);
 
-				resolve(message);
-			});
-		});
-	}
+        resolve(message);
+      });
+    });
+  }
 
-	protected processAttachments(files: any): { type: string; filename: string; content: string } {
-		return files.map((file: any) => {
-			const { content, contentType, filename } = this.getFileData(file);
+  protected processAttachments (files: any): { type: string; filename: string; content: string } {
+    return files.map((file: any) => {
+      const { content, contentType, filename } = this.getFileData(file);
 
-			return {
-				contentType,
-				filename,
-				encoding: 'base64',
-				content: content.toString('base64')
-			};
-		});
-	}
+      return {
+        contentType,
+        filename,
+        encoding: 'base64',
+        content: content.toString('base64')
+      };
+    });
+  }
 }
