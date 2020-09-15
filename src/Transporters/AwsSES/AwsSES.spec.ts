@@ -32,6 +32,16 @@ describe('AwsSES', () => {
     expect(SESSpy).toHaveBeenCalledTimes(1);
   });
 
+  it('Should only update config with provided region', () => {
+    new AwsSES({ region: 'mockRegion' });
+
+    expect(CredentialsSpy).not.toHaveBeenCalled();
+    expect(ConfigUpdateSpy).toHaveBeenCalledWith({
+      region: 'mockRegion'
+    });
+    expect(SESSpy).toHaveBeenCalled();
+  });
+
   it('Should initialize AwsSES without credentials', () => {
     new AwsSES({});
 

@@ -8,13 +8,13 @@ export default class AwsSES extends Transporter {
   constructor (configuration: any) {
     super(configuration);
 
-    const { accessKeyId, secretAccessKey, region } = configuration;
+    const { accessKeyId, secretAccessKey, region } = configuration,
+      settings = {
+        ...(accessKeyId && secretAccessKey && { credentials: new Credentials({ accessKeyId, secretAccessKey }) }),
+        ...(region && { region })
+      };
 
-    if (accessKeyId && secretAccessKey && region) {
-      const credentials = new Credentials({ accessKeyId, secretAccessKey });
-
-      config.update({ credentials, region });
-    }
+    if (Object.keys(settings).length) config.update(settings)
 
     this.client = new SES();
   }
