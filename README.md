@@ -5,35 +5,30 @@
 
 A library written in typescript using known email clients for sending emails. It has built in support for compiling templates and sending html in the email.
 
-## Changelog
-
-[CHANGELOG.md](./CHANGELOG.md)
-
 ## Usage
 
 ### Configuration of client
 
 ```javascript
-import { EmailClient } from '@gkampitakis/email-client';
+import { EmailClient } from 'template-email-client';
 
 const client = new EmailClient({
-	transporter: 'sendgrid', // Supported 'sendgrid', 'mailgun', 'postmark', 'aws'
-	apik_key: '', //Your api key depending on each client provider
-	templateDir: __dirname + '/path/to/your/email/templates'
-	//... any other provider specific configuration
+	transporter: 'sendgrid', // Supported 'sendgrid', 'mailgun', 'postmark', 'SES'
+	apiKey: '', //Your send grid api key
+	templateLanguage: 'handlebars' // Supported 'handlebars', 'mjml', 'ejs'
 });
 ```
 
-### More specific configs for some transporters
+### Configurations for Transporters
 
-<details><summary> AWS Config</summary>
+<details><summary> Sendgrid Config</summary>
 <p>
 
 ```json
 {
-	"api_key": "*******",
-	"secret": "*******",
-	"region:": "eu-west-2"
+  "transporter": "sendgrid",
+	"apiKey": "*******",
+  "templateLanguage": "handlebars" // Supported 'handlebars', 'mjml', 'ejs'
 }
 ```
 
@@ -43,10 +38,43 @@ const client = new EmailClient({
 <details><summary> Mailgun Config</summary>
 <p>
 
-```js
+```json
 {
-	"api_key": "*******",
-	"domain": "/mock/domain"
+  "transporter": "mailgun",
+	"apiKey": "*******",
+  "domain": "/mock/domain",
+  "templateLanguage": "handlebars" // Supported 'handlebars', 'mjml', 'ejs'
+}
+```
+
+</p>
+</details>
+
+<details><summary> Postmark Config</summary>
+<p>
+
+```json
+{
+  "transporter": "postmark",
+	"serverToken": "*******",
+  "configOptions": {},
+  "templateLanguage": "handlebars" // Supported 'handlebars', 'mjml', 'ejs'
+}
+```
+
+</p>
+</details>
+
+<details><summary> AWS Config</summary>
+<p>
+
+```json
+{
+  "transporter": "SES",
+	"accessKeyId": "*******",
+	"secretAccessKey": "*******",
+  "region:": "eu-west-2",
+  "templateLanguage": "handlebars" // Supported 'handlebars', 'mjml', 'ejs'
 }
 ```
 
@@ -70,20 +98,23 @@ client.send({
 -   cc `string` or `string []`
 -   bcc `string` or `string []`
 -   text `string`
+-   html `string`
 -   subject `string`
--   template `string` the filename of the html template you want to use
+-   template `string` the path of the html template you want to use
 -   data `object` an object containing the data that the template is going to be compiled with
 -   subject `string`
 -   any other transporter specific field
 -   attachments
-    ```js
-    [
-    	{
-    		name: 'myfilte.txt',
-    		path: __dirname + '/path/to/file'
-    	}
-    ];
-    ```
+```js
+[
+    {
+        "name": "myfilte.txt", // optional if not provided take filename
+        "path": __dirname + "/path/to/file"
+    }
+] 
+// or 
+[__dirname + "/path/to/file","another/file"]
+```
 
 ### Email Client Methods
 
@@ -103,25 +134,29 @@ client.setTransporter('sendgrid',{...});
 /*Get the transporter*/
 client.getTransporter();
 
-/*Set path for the templates*/
-client.setTemplates('/path/to/new/templates');
-
 ```
 
-## Suporrted Templates
+## Supported Templates
 
 -   mjml
 -   handlebars
+-   ejs
 
 ## Supported Clients
 
 -   mailgun
 -   postmark
 -   sendgrid
--   AwsSES
+-   SES
 
-## Author and Maintainer
+### Changelog
 
-[Georgios Kampitakis](https://github.com/gkampitakis)
+[CHANGELOG.md](./CHANGELOG.md)
+
+### Example
+
+You can also check an [example](./example) usage.
+
+### Issues
 
 For any [issues](https://github.com/gkampitakis/email-client/issues).

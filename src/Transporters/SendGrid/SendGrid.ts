@@ -37,7 +37,7 @@ export default class SendGrid extends Transporter {
     return data;
   }
 
-  protected processAttachments (files: any = []): { type: string; filename: string; content: string } {
+  protected processAttachments (files: any): { type: string; filename: string; content: string } {
     return files.map((file: any) => {
       const { content, contentType, filename } = this.getFileData(file);
 

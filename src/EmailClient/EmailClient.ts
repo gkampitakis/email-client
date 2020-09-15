@@ -28,13 +28,14 @@ export default class EmailClient {
 		this.templateLng = templateLanguage;
 		this.setTransporter(transporter, rest);
 	}
-
+  /** Send email method */
 	public async send(message: Message): Promise<any> {
 		if (message.template && !this.templateLng)
 			console.warn('Missing template language,templates will not be compiled!');
 		return this._transporter.send(this.constructMessage(message, this.templateLng));
 	}
 
+  /** Change Transporter */
 	public setTransporter(transporter: Transporter, configuration: any) {
 		if (!Transporters[transporter])
 			throw new Error(
@@ -45,10 +46,12 @@ export default class EmailClient {
 		this._transporter = new Transporters[transporter](configuration);
 	}
 
+  /** Get Transporter object */
 	public getTransporter(): any {
 		return this._transporter.get();
 	}
 
+  /** Set configuration methods for handlebars */
 	public configureHandlebars(configuration: HandlebarsConfiguration) {
 		const { configure, helpers = [] } = configuration;
 
