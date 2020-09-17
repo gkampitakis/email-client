@@ -146,7 +146,7 @@ describe('AwsSES', () => {
     });
   });
 
-  it('Should not return type if no result is returned in attachments', async () => {
+  it('Should return unknown type if no result is returned in attachments', async () => {
     SRC.result = false;
 
     const transporter = new AwsSES({ accessKeyId: 'mockKey', secretAccessKey: 'mockKey', region: 'mockRegion' });
@@ -173,8 +173,8 @@ describe('AwsSES', () => {
       from: 'me@gmail.com',
       to: 'mock@mail.com',
       attachments: [
-        { encoding: 'base64', filename: 'mockAttachments', content: 'mock/path', contentType: '' },
-        { encoding: 'base64', filename: 'mockAttachments', content: 'mock/path2', contentType: '' }
+        { encoding: 'base64', filename: 'mockAttachments', content: 'mock/path', contentType: 'unknown' },
+        { encoding: 'base64', filename: 'mockAttachments', content: 'mock/path2', contentType: 'unknown' }
       ]
     });
   });

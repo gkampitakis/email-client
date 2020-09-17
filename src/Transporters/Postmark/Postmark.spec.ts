@@ -64,7 +64,7 @@ describe('Postmark', () => {
     expect(LookupSpy).toHaveBeenNthCalledWith(1, 'mock/path');
   });
 
-  it('Should not return type if no result is returned in attachments', async () => {
+  it('Should return unknown type if no result is returned in attachments', async () => {
     SRC.result = false;
 
     const transporter = new Postmark({ serverToken: 'mockApiKey', configOptions: { mock: 'data' } as any });
@@ -88,8 +88,8 @@ describe('Postmark', () => {
       TextBody: 'test',
       Subject: 'test',
       attachments: [
-        { ContentType: '', Name: 'mockAttachments', Content: 'mock/path' },
-        { ContentType: '', Name: 'mockAttachments', Content: 'mock/path2' }
+        { ContentType: 'unknown', Name: 'mockAttachments', Content: 'mock/path' },
+        { ContentType: 'unknown', Name: 'mockAttachments', Content: 'mock/path2' }
       ]
     });
 

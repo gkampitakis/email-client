@@ -2,8 +2,8 @@
 	"name": "template-email-client",
 	"version": "1.0.0",
 	"description": "A wrapper for email clients supporting templates",
-	"main": "lib/index.js",
-	"types": "lib/index.d.ts",
+	"main": "lib/src/index.js",
+	"types": "lib/src/index.d.ts",
 	"scripts": {
 		"test": "npm run clean && npm run eslint && jest",
 		"build": "npm run clean && tsc",
@@ -28,9 +28,9 @@
 		"@commitlint/config-conventional": "^11.0.0",
 		"@semantic-release/changelog": "^5.0.1",
 		"@semantic-release/git": "^9.0.0",
-		"@types/jest": "^26.0.13",
+		"@types/jest": "^26.0.14",
 		"@types/mime-types": "^2.1.0",
-		"@types/node": "^14.10.2",
+		"@types/node": "^14.10.3",
 		"@types/nodemailer": "^6.4.0",
 		"@types/postmark": "^2.0.3",
 		"@typescript-eslint/eslint-plugin": "^4.1.1",
@@ -48,8 +48,8 @@
 		"@types/ejs": "^3.0.4"
 	},
 	"dependencies": {
-		"@sendgrid/mail": "^7.2.5",
-		"aws-sdk": "^2.753.0",
+		"@sendgrid/mail": "^7.2.6",
+		"aws-sdk": "^2.754.0",
 		"ejs": "^3.1.5",
 		"handlebars": "^4.7.6",
 		"mailgun-js": "^0.22.0",
@@ -59,7 +59,7 @@
 		"postmark": "^2.5.5"
 	},
 	"files": [
-		"lib/**/*"
+		"lib/src/**/*"
 	],
 	"jest": {
 		"globals": {
