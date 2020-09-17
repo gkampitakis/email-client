@@ -42,7 +42,7 @@ export abstract class Transporter {
     return {
       filename,
       content: fs.readFileSync(filepath),
-      contentType: result || ''
+      contentType: result || 'unknown'
     };
   }
 }

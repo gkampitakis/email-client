@@ -76,7 +76,7 @@ describe('SendGrid', () => {
     expect(LookupSpy).toHaveBeenNthCalledWith(1, 'mock/path');
   });
 
-  it('Should not return type if no result is returned in attachments', async () => {
+  it('Should return unknown type if no result is returned in attachments', async () => {
     SRC.result = false;
 
     const transporter = new SendGrid({ apiKey: 'mockApiKey' });
@@ -106,8 +106,8 @@ describe('SendGrid', () => {
         }
       ],
       attachments: [
-        { type: '', filename: 'mockAttachments', content: 'mock/path' },
-        { type: '', filename: 'mockAttachments', content: 'mock/path2' }
+        { type: 'unknown', filename: 'mockAttachments', content: 'mock/path' },
+        { type: 'unknown', filename: 'mockAttachments', content: 'mock/path2' }
       ]
     });
 
