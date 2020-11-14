@@ -1,3 +1,10 @@
+## [1.0.2](https://github.com/gkampitakis/email-client/compare/v1.0.1...v1.0.2) (2020-11-14)
+
+
+### Bug Fixes
+
+* update email client dependencies ([04d24a1](https://github.com/gkampitakis/email-client/commit/04d24a15ec2f51ea9c3ed908694ee247ec46eb47))
+
 ## [1.0.1](https://github.com/gkampitakis/email-client/compare/v1.0.0...v1.0.1) (2020-10-27)
 
 

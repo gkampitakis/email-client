@@ -1,6 +1,6 @@
 {
 	"name": "template-email-client",
-	"version": "1.0.1",
+	"version": "1.0.2",
 	"description": "A wrapper for email clients supporting templates",
 	"main": "lib/src/index.js",
 	"types": "lib/src/index.d.ts",
