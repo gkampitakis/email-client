@@ -155,7 +155,7 @@ describe('EmailClient', () => {
 
 		it('Should print warning if template provided without template language', async () => {
 			const client = new EmailClient({ apiKey: 'mockKey', transporter: 'sendgrid' }),
-				warnSpy = jest.spyOn(console, 'warn');
+				warnSpy = jest.spyOn(console, 'warn').mockImplementation();
 
 			await client.send({
 				from: 'mock@email.com',
