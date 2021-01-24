@@ -15,7 +15,7 @@ describe('EmailClient', () => {
     HbsMock = jest.requireMock('handlebars').Hbs,
     EjsMock = jest.requireMock('ejs').default,
     { MjmlCompileSpy } = jest.requireMock('mjml'),
-    { HLRUConstructorSpy } = jest.requireMock('hashlru');
+    { HLRUConstructorSpy, getSpy, setSpy, clearCache } = jest.requireMock('hashlru');
 
   beforeEach(() => {
     MailGunMock.SendSpy.mockClear();
@@ -25,6 +25,7 @@ describe('EmailClient', () => {
     SendGridMock.GetSpy.mockClear();
     SendGridMock.ConstructorSpy.mockClear();
     FsMock.ReaddirSyncSpy.mockClear();
+    FsMock.ReadFileSyncSpy.mockClear();
     HbsMock.CompileSpy.mockClear();
     HbsMock.TemplateSpy.mockClear();
     MjmlCompileSpy.mockClear();
@@ -35,6 +36,9 @@ describe('EmailClient', () => {
     EjsMock.CompileSpy.mockClear();
     EjsMock.TemplateSpy.mockClear();
     HLRUConstructorSpy.mockClear();
+    getSpy.mockClear();
+    setSpy.mockClear();
+    clearCache();
 
     FsMock.StaticFiles = [];
     process.env.NODE_ENV = 'test';
@@ -316,6 +320,108 @@ describe('EmailClient', () => {
         to: ['mock@email.com'],
         cc: ['mock@email.com']
       });
+    });
+
+    it('Should cache templates in production [mjml]', async () => {
+      FsMock.StaticFiles = ['mjml'];
+
+      const client = new EmailClient({
+        apiKey: '',
+        transporter: 'sendgrid',
+        templateLanguage: 'mjml',
+        production: true
+      });
+
+      await client.send({
+        from: 'mock@email.com',
+        to: ['mock@email.com'],
+        template: 'mjml'
+      });
+
+      await client.send({
+        from: 'mock@email.com',
+        to: ['mock@email.com'],
+        template: 'mjml'
+      });
+
+      expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(2, {
+        from: 'mock@email.com',
+        to: ['mock@email.com'],
+        html: 'html'
+      });
+      expect(HbsMock.TemplateSpy).toHaveBeenCalledTimes(2);
+      expect(MjmlCompileSpy).toHaveBeenCalledTimes(2);
+      expect(getSpy).toHaveBeenNthCalledWith(2, 'mjml');
+      expect(FsMock.ReadFileSyncSpy).toHaveBeenCalledTimes(1);
+      expect(setSpy).toHaveBeenNthCalledWith(1, 'mjml', expect.any(Function));
+    });
+
+    it('Should cache templates in production [ejs]', async () => {
+      FsMock.StaticFiles = ['ejs'];
+
+      const client = new EmailClient({
+        apiKey: '',
+        transporter: 'sendgrid',
+        templateLanguage: 'ejs',
+        production: true
+      });
+
+      await client.send({
+        from: 'mock@email.com',
+        to: ['mock@email.com'],
+        template: 'ejs'
+      });
+
+      await client.send({
+        from: 'mock@email.com',
+        to: ['mock@email.com'],
+        template: 'ejs'
+      });
+
+      expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(2, {
+        from: 'mock@email.com',
+        to: ['mock@email.com'],
+        html: 'htmlEJS'
+      });
+      expect(EjsMock.TemplateSpy).toHaveBeenCalledTimes(2);
+      expect(EjsMock.CompileSpy).toHaveBeenCalledTimes(1);
+      expect(getSpy).toHaveBeenNthCalledWith(2, 'ejs');
+      expect(FsMock.ReadFileSyncSpy).toHaveBeenCalledTimes(1);
+      expect(setSpy).toHaveBeenNthCalledWith(1, 'ejs', expect.any(Function));
+    });
+
+    it('Should cache templates in production [handlebars]', async () => {
+      FsMock.StaticFiles = ['hbs'];
+
+      const client = new EmailClient({
+        apiKey: '',
+        transporter: 'sendgrid',
+        templateLanguage: 'handlebars',
+        production: true
+      });
+
+      await client.send({
+        from: 'mock@email.com',
+        to: ['mock@email.com'],
+        template: 'hbs'
+      });
+
+      await client.send({
+        from: 'mock@email.com',
+        to: ['mock@email.com'],
+        template: 'hbs'
+      });
+
+      expect(SendGridMock.SendSpy).toHaveBeenNthCalledWith(2, {
+        from: 'mock@email.com',
+        to: ['mock@email.com'],
+        html: 'html'
+      });
+      expect(HbsMock.TemplateSpy).toHaveBeenCalledTimes(2);
+      expect(HbsMock.CompileSpy).toHaveBeenCalledTimes(1);
+      expect(getSpy).toHaveBeenNthCalledWith(2, 'hbs');
+      expect(FsMock.ReadFileSyncSpy).toHaveBeenCalledTimes(1);
+      expect(setSpy).toHaveBeenNthCalledWith(1, 'hbs', expect.any(Function));
     });
   });
 

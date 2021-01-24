@@ -4,12 +4,14 @@ jest.mock('aws-sdk');
 jest.mock('fs');
 jest.mock('mime-types');
 jest.mock('nodemailer/lib/mail-composer');
+jest.mock('hashlru');
 
 describe('AwsSES', () => {
   const { CredentialsSpy, SESSpy, SendRawEmailSpy, ConfigUpdateSpy, SES: SESMock } = jest.requireMock('aws-sdk'),
     { LookupSpy, SRC } = jest.requireMock('mime-types'),
     FsMock = jest.requireMock('fs').Fs,
-    MailComposerMock = jest.requireMock('nodemailer/lib/mail-composer').MailComposer;
+    MailComposerMock = jest.requireMock('nodemailer/lib/mail-composer').MailComposer,
+    { HLRUConstructorSpy, getSpy, setSpy, clearCache } = jest.requireMock('hashlru');
 
   beforeEach(() => {
     CredentialsSpy.mockClear();
@@ -19,17 +21,22 @@ describe('AwsSES', () => {
     LookupSpy.mockClear();
     FsMock.ReadFileSyncSpy.mockClear();
     MailComposerMock.ConstructorSpy.mockClear();
+    clearCache();
+    setSpy.mockClear();
+    getSpy.mockClear();
+    HLRUConstructorSpy.mockClear();
 
     MailComposerMock.BuildError = false;
     SRC.result = true;
   });
 
   it('Should initialize AwsSES', () => {
-    new AwsSES({ accessKeyId: 'mockKey', secretAccessKey: 'mockKey', region: 'mockRegion' });
+    new AwsSES({ accessKeyId: 'mockKey', secretAccessKey: 'mockKey', region: 'mockRegion', attCacheSize: 100 });
 
     expect(CredentialsSpy).toHaveBeenNthCalledWith(1, { accessKeyId: 'mockKey', secretAccessKey: 'mockKey' });
     expect(ConfigUpdateSpy).toHaveBeenCalledTimes(1);
     expect(SESSpy).toHaveBeenCalledTimes(1);
+    expect(HLRUConstructorSpy).toHaveBeenCalledWith(100);
   });
 
   it('Should only update config with provided region', () => {
@@ -199,5 +206,48 @@ describe('AwsSES', () => {
     const transporter = new AwsSES({ accessKeyId: 'mockKey', secretAccessKey: 'mockKey', region: 'mockRegion' });
 
     expect(transporter.get()).toBeInstanceOf(SESMock);
+  });
+
+  it('Should cache attachments in production', async () => {
+    const transporter = new AwsSES({
+      production: true
+    });
+
+    await transporter.send({
+      html: '<div>Test</div>',
+      subject: 'testSubject',
+      from: 'me@gmail.com',
+      to: ['mock@mail.com'],
+      attachments: [
+        { name: 'mockAttachments', path: 'mock/path' },
+        { name: 'mockAttachments', path: 'mock/path2' }
+      ]
+    });
+
+    await transporter.send({
+      html: '<div>Test</div>',
+      subject: 'testSubject',
+      from: 'me@gmail.com',
+      to: ['mock@mail.com'],
+      attachments: [
+        { name: 'mockAttachments', path: 'mock/path' },
+        { name: 'mockAttachments', path: 'mock/path2' }
+      ]
+    });
+
+    expect(FsMock.ReadFileSyncSpy).toHaveBeenCalledTimes(2);
+    expect(LookupSpy).toHaveBeenCalledTimes(2);
+    expect(MailComposerMock.ConstructorSpy).toHaveBeenNthCalledWith(2, {
+      html: '<div>Test</div>',
+      subject: 'testSubject',
+      from: 'me@gmail.com',
+      to: 'mock@mail.com',
+      attachments: [
+        { encoding: 'base64', filename: 'mockAttachments', content: 'mock/path', contentType: 'image/png' },
+        { encoding: 'base64', filename: 'mockAttachments', content: 'mock/path2', contentType: 'image/png' }
+      ]
+    });
+    expect(setSpy).toHaveBeenCalledTimes(2);
+    expect(getSpy).toHaveBeenCalledTimes(4);
   });
 });
