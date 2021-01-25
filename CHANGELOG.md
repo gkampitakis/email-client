@@ -1,3 +1,10 @@
+# [1.1.0](https://github.com/gkampitakis/email-client/compare/v1.0.2...v1.1.0) (2021-01-25)
+
+
+### Features
+
+* add support for caching template and attachment files  ([#41](https://github.com/gkampitakis/email-client/issues/41)) ([60b7691](https://github.com/gkampitakis/email-client/commit/60b7691d8c7a6ae5b09154f1659f9bf202732588))
+
 ## [1.0.2](https://github.com/gkampitakis/email-client/compare/v1.0.1...v1.0.2) (2020-11-14)
 
 
