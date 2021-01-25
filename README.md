@@ -34,7 +34,7 @@ const client = new EmailClient({
 ```javascript
 {
   "transporter": "sendgrid",
-	"apiKey": "*******",
+  "apiKey": "*******",
   "templateLanguage": "handlebars" // Supported 'handlebars', 'mjml', 'ejs'
 }
 ```
@@ -48,9 +48,9 @@ const client = new EmailClient({
 ```javascript
 {
   "transporter": "mailgun",
-	"apiKey": "*******",
+  "apiKey": "*******",
   "domain": "/mock/domain",
-  "templateLanguage": "handlebars" // Supported 'handlebars', 'mjml', 'ejs'
+  1"templateLanguage": "handlebars" // Supported 'handlebars', 'mjml', 'ejs'
 }
 ```
 
@@ -63,7 +63,7 @@ const client = new EmailClient({
 ```javascript
 {
   "transporter": "postmark",
-	"serverToken": "*******",
+  "serverToken": "*******",
   "configOptions": {},
   "templateLanguage": "handlebars" // Supported 'handlebars', 'mjml', 'ejs'
 }
@@ -78,8 +78,8 @@ const client = new EmailClient({
 ```javascript
 {
   "transporter": "SES",
-	"accessKeyId": "*******",
-	"secretAccessKey": "*******",
+  "accessKeyId": "*******",
+  "secretAccessKey": "*******",
   "region:": "eu-west-2",
   "templateLanguage": "handlebars" // Supported 'handlebars', 'mjml', 'ejs'
 }
