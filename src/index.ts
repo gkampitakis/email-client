@@ -7,3 +7,5 @@ export {
   PostmarkConfiguration,
   Message
 } from './interfaces';
+
+module.exports = EmailClient;

@@ -10,6 +10,8 @@ A library written in typescript using known email clients for sending emails. It
 ### Configuration of client
 
 ```javascript
+// or with commonjs const EmailClient = require('template-email-client');
+
 import { EmailClient } from 'template-email-client';
 
 const client = new EmailClient({
