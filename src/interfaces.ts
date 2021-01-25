@@ -9,10 +9,16 @@ export type Transporter = 'SES' | 'sendgrid' | 'postmark' | 'mailgun';
 export type Configuration = SESConfiguration | SendGridConfiguration | PostmarkConfiguration | MailgunConfiguration;
 
 export interface SESConfiguration {
+  /** In case of true or NODE_ENV=production enables caching for template and attachment files */
+  production?: boolean;
+  /** cache size for template files default = 100 */
+  tmpltCacheSize?: number;
+  /** cache size for attachment files default = 100 */
+  attCacheSize?: number;
   transporter: 'SES';
   /** AWS accessKeyId */
   accessKeyId?: string;
-   /** AWS secretAccessKey */
+  /** AWS secretAccessKey */
   secretAccessKey?: string;
   /** AWS region */
   region?: string;
@@ -20,6 +26,12 @@ export interface SESConfiguration {
 }
 
 export interface SendGridConfiguration {
+  /** In case of true or NODE_ENV=production enables caching for template and attachment files */
+  production?: boolean;
+  /** cache size for template files default = 100 */
+  tmpltCacheSize?: number;
+  /** cache size for attachment files default = 100 */
+  attCacheSize?: number;
   transporter: 'sendgrid';
   /** Sendgrid API key */
   apiKey: string;
@@ -27,6 +39,12 @@ export interface SendGridConfiguration {
 }
 
 export interface PostmarkConfiguration {
+  /** In case of true or NODE_ENV=production enables caching for template and attachment files */
+  production?: boolean;
+  /** cache size for template files default = 100 */
+  tmpltCacheSize?: number;
+  /** cache size for attachment files default = 100 */
+  attCacheSize?: number;
   transporter: 'postmark';
   /** Server Token provided by postmark */
   serverToken: string;
@@ -36,6 +54,12 @@ export interface PostmarkConfiguration {
 }
 
 export interface MailgunConfiguration {
+  /** In case of true or NODE_ENV=production enables caching for template and attachment files */
+  production?: boolean;
+  /** cache size for template files default = 100 */
+  tmpltCacheSize?: number;
+  /** cache size for attachment files default = 100 */
+  attCacheSize?: number;
   transporter: 'mailgun';
   /** Mailgun api key */
   apiKey: string;
@@ -58,7 +82,7 @@ export interface Message {
   data?: Record<string, any>;
   /** Sender name */
   name?: string;
-   /** Email subject */
+  /** Email subject */
   subject?: string;
   /** Send plain text */
   text?: string;
@@ -78,3 +102,6 @@ export interface HandlebarsConfiguration {
   configure?: (Handlebars) => void;
   helpers?: { name: string; function: HelperDelegate }[];
 }
+
+export type DistributiveOmit<T, K extends keyof any> = T extends any ?
+  Omit<T, K> : never;

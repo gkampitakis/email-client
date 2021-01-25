@@ -10,21 +10,28 @@ A library written in typescript using known email clients for sending emails. It
 ### Configuration of client
 
 ```javascript
+// or with commonjs const EmailClient = require('template-email-client');
+
 import { EmailClient } from 'template-email-client';
 
 const client = new EmailClient({
-	transporter: 'sendgrid', // Supported 'sendgrid', 'mailgun', 'postmark', 'SES'
-	apiKey: '', //Your send grid api key
-	templateLanguage: 'handlebars' // Supported 'handlebars', 'mjml', 'ejs'
+    transporter: 'sendgrid', // Supported 'sendgrid', 'mailgun', 'postmark', 'SES'
+    apiKey: '', //Your send grid api key
+    templateLanguage: 'handlebars', // Supported 'handlebars', 'mjml', 'ejs'
+    production: true, // or process.env.NODE_ENV = production is as setting to true
+    tmpltCacheSize: 50, // template cache size default = 100
+    attCacheSize: 50, // attachment cache size default = 100
 });
 ```
+
+> Note that in production mode either by explicitly setting it to true or by setting NODE_ENV = production **template-email-client** will cache template and attachment files.
 
 ### Configurations for Transporters
 
 <details><summary> Sendgrid Config</summary>
 <p>
 
-```json
+```javascript
 {
   "transporter": "sendgrid",
 	"apiKey": "*******",
@@ -38,7 +45,7 @@ const client = new EmailClient({
 <details><summary> Mailgun Config</summary>
 <p>
 
-```json
+```javascript
 {
   "transporter": "mailgun",
 	"apiKey": "*******",
@@ -53,7 +60,7 @@ const client = new EmailClient({
 <details><summary> Postmark Config</summary>
 <p>
 
-```json
+```javascript
 {
   "transporter": "postmark",
 	"serverToken": "*******",
@@ -68,7 +75,7 @@ const client = new EmailClient({
 <details><summary> AWS Config</summary>
 <p>
 
-```json
+```javascript
 {
   "transporter": "SES",
 	"accessKeyId": "*******",
@@ -85,9 +92,9 @@ const client = new EmailClient({
 
 ```javascript
 client.send({
-	from: 'mock@email.com',
-	to: 'test@email.com',
-	text: 'Hello World'
+    from: 'mock@email.com',
+    to: 'test@email.com',
+    text: 'Hello World',
 });
 ```
 
@@ -105,15 +112,17 @@ client.send({
 -   subject `string`
 -   any other transporter specific field
 -   attachments
-```js
+
+```javascript
 [
     {
-        "name": "myfilte.txt", // optional if not provided take filename
-        "path": __dirname + "/path/to/file"
-    }
-] 
-// or 
-[__dirname + "/path/to/file","another/file"]
+        name: 'myfilte.txt', // optional if not provided take filename
+        path: __dirname + '/path/to/file',
+    },
+][
+    // or
+    (__dirname + '/path/to/file', 'another/file')
+];
 ```
 
 ### Email Client Methods
@@ -161,6 +170,6 @@ You can also check an [example](./example) usage.
 
 For any [issues](https://github.com/gkampitakis/email-client/issues).
 
-## License 
+## License
 
 MIT License

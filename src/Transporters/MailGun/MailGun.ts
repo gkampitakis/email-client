@@ -43,8 +43,8 @@ export default class MailGun extends Transporter {
     };
   }
 
-  protected processAttachments (files: any): any {
-    return files.map((file: any) => {
+  protected processAttachments (files: unknown[]) {
+    return files.map((file: unknown) => {
       const { content, filename } = this.getFileData(file);
 
       return new this.mailGun.Attachment({ data: content, filename });

@@ -39,8 +39,8 @@ export default class Postmark extends Transporter {
     };
   }
 
-  protected processAttachments (files: any): { Name: string; Content: string; ContentType: string } {
-    return files.map((file: any) => {
+  protected processAttachments (files: unknown[]): { Name: string; Content: string; ContentType: string }[] {
+    return files.map((file: unknown) => {
       const { content, filename, contentType } = this.getFileData(file);
 
       return {

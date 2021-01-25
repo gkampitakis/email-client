@@ -14,7 +14,7 @@ export default class AwsSES extends Transporter {
         ...(region && { region })
       };
 
-    if (Object.keys(settings).length) config.update(settings)
+    if (Object.keys(settings).length) config.update(settings);
 
     this.client = new SES();
   }
@@ -56,8 +56,8 @@ export default class AwsSES extends Transporter {
     });
   }
 
-  protected processAttachments (files: any): { type: string; filename: string; content: string } {
-    return files.map((file: any) => {
+  protected processAttachments (files: unknown[]): { contentType: string; filename: string; content: string; encoding: string; }[] {
+    return files.map((file: unknown) => {
       const { content, contentType, filename } = this.getFileData(file);
 
       return {
