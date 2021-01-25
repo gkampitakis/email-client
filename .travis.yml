@@ -1,11 +1,17 @@
 language: node_js
 node_js:
   - node
+  - 14
+  - 12
+  - 10
 
 branches:
   only:
     - master
     - type=pull_request
+
+cache:
+  npm: false
 
 before_install:
   - npm install
