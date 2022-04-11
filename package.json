@@ -31,7 +31,7 @@
     "@types/postmark": "^2.0.3",
     "@typescript-eslint/eslint-plugin": "^4.25.0",
     "@typescript-eslint/parser": "^4.25.0",
-    "eslint": "^7.27.0",
+    "eslint": "^8.13.0",
     "eslint-config-airbnb-base": "^14.2.1",
     "eslint-plugin-import": "^2.23.4",
     "jest": "^27.0.3",
