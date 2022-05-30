@@ -49,7 +49,7 @@
     "mime-types": "^2.1.30",
     "mjml": "^4.9.3",
     "nodemailer": "^6.6.1",
-    "postmark": "^2.7.4"
+    "postmark": "^3.0.11"
   },
   "files": [
     "lib/src/**/*"
